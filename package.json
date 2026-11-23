@@ -1,0 +1,19 @@
+{
+  "name": "mi-babayit",
+  "version": "9.0.0",
+  "private": true,
+  "description": "מי בבית — שמירה חכמה על הבית, בדפדפן בלבד",
+  "scripts": {
+    "dev": "sirv site --dev --port 5173 --host",
+    "check": "node tools/check-order.js",
+    "test": "node tools/check-order.js && playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@vladmandic/human": "3.3.6",
+    "@vladmandic/human-models": "3.0.4",
+    "acorn": "^8.19.0",
+    "acorn-walk": "^8.3.5",
+    "sirv-cli": "^3.0.1"
+  }
+}

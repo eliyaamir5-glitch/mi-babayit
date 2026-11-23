@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07090f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="מי בבית">
+<title>מי בבית</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@vladmandic/human@3.3.6/dist/human.js"></script>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="logo">
+      <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="10" r="3"/><path d="M7 18c1-2.5 3-3.5 5-3.5s4 1 5 3.5"/></svg></div>
+      <div><h1>מי בבית</h1><small>שמירה חכמה על הבית · גרסה 9</small></div>
+    </div>
+    <div class="spacer"></div>
+    <div class="pill"><span class="dot load" id="sDot"></span><span id="sText">טוען מנוע זיהוי...</span></div>
+    <div class="pill gpill hidden" id="gPill"><span class="dot"></span><span id="gPillTxt"></span></div>
+    <div class="pill" id="fpsPill" style="display:none"><span id="fps">0</span>&nbsp;פריימים בשנייה</div>
+    <button class="iconbtn" id="a11yBtn" title="נגישות" aria-label="תפריט נגישות"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="4" r="2"/><path d="M5 8h14M12 8v6M9 21l3-7 3 7"/></svg></button>
+    <button class="iconbtn" id="setBtn" title="הגדרות" aria-label="הגדרות"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+  </header>
+
+  <div class="grid">
+    <section>
+      <div class="stage mirror" id="stage">
+        <video id="video" autoplay muted playsinline></video>
+        <canvas id="canvas"></canvas>
+        <div class="scan"></div>
+        <div class="zhint hidden" id="zHint"><b>סימון דלתות, חלונות ואזורים</b><span>גרור אצבע או עכבר על התמונה כדי לסמן מלבן סביב דלת, חלון, נקודת כניסה או אזור אסור.</span><div class="zlist" id="zList"></div></div>
+        <div class="gbanner hidden" id="gBanner"></div>
+        <div class="hud hidden" id="hud">
+          <div class="tag live"><i></i>שידור חי</div>
+          <div class="tag" id="hudCount">אין אף אחד מול המצלמה</div>
+          <div class="grow"></div>
+          <div class="tag" id="hudCam"></div>
+        </div>
+        <div class="intro" id="intro">
+          <div class="ring"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>
+          <h2>מצלמה שמכירה את הבית</h2>
+          <p>כל פנים חדשות נכנסות לרשימה כ"לא מזוהה". נותנים שם פעם אחת, ומאותו רגע המערכת מזהה את האדם בכל פעם שהוא מופיע.</p>
+          <div class="progress" id="prog"><b id="progBar"></b></div>
+          <div class="selectrow">
+            <select id="camSel" class="hidden"></select>
+            <button class="primary" id="startBtn" disabled>הפעל מצלמה</button>
+          </div>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="primary" id="startBtn2" disabled style="padding:12px 22px">📷 הפעל מצלמה</button>
+        <button class="ghost hidden" id="stopBtn">עצור מצלמה</button>
+        <button class="ghost hidden" id="mirrorBtn">היפוך מראה</button>
+        <button class="ghost hidden" id="snapBtn">צלם רגע</button>
+        <button class="ghost hidden" id="zoneBtn">📍 דלתות ואזורים</button>
+      </div>
+      <div class="stats">
+        <div class="card stat g"><b id="stNow">0</b><span>מול המצלמה עכשיו</span></div>
+        <div class="card stat"><b id="stKnown">0</b><span>אנשים מוכרים</span></div>
+        <div class="card stat"><b id="stUnk">0</b><span>מחכים לשם</span></div>
+        <div class="card stat"><b id="stToday">0</b><span>כניסות היום</span></div>
+        <div class="card stat sg"><b id="stGuard">0</b><span>בשמירה</span></div>
+      </div>
+    </section>
+
+    <aside class="card side">
+      <div class="tabs">
+        <button class="tab active" data-tab="now">עכשיו <span class="n" id="tN">0</span></button>
+        <button class="tab" data-tab="unk">לא מזוהים <span class="n" id="tU">0</span></button>
+        <button class="tab" data-tab="known">מוכרים <span class="n" id="tK">0</span></button>
+        <button class="tab" data-tab="guard">שמירה <span class="n" id="tG">0</span></button>
+        <button class="tab" data-tab="log">יומן</button>
+      </div>
+      <div class="pane active" id="p-now"></div>
+      <div class="pane" id="p-unk"></div>
+      <div class="pane" id="p-known"></div>
+      <div class="pane" id="p-guard"></div>
+      <div class="pane" id="p-log"></div>
+    </aside>
+  </div>
+</div>
+
+<!-- profile -->
+<div class="modal" id="nameModal"><div class="mbox prof">
+  <div class="pbanner"><button class="iconbtn pclose" id="mCancel" title="סגור" aria-label="סגור פרופיל"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+  <div class="phead">
+    <div class="pav"><img id="mImg" alt=""><span class="plive hidden" id="mLive">מול המצלמה</span></div>
+    <div class="ptitle"><h3 id="mTitle"></h3><div class="prole" id="mRoleBadge"></div></div>
+  </div>
+  <div class="ptabs" role="tablist" id="pTabs">
+    <button data-pt="main" role="tab">ראשי</button><button data-pt="safe" role="tab">בטיחות</button><button data-pt="day" role="tab">לוח יומי</button><button data-pt="act" role="tab">פעילות</button><button data-pt="more" role="tab">עוד</button>
+  </div>
+  <div class="pbody">
+    <div class="pstats" data-pt="act">
+      <div><b id="psVisits">0</b><span>כניסות</span></div>
+      <div><b id="psFirst">-</b><span>נראה לראשונה</span></div>
+      <div><b id="psLast">-</b><span>נראה לאחרונה</span></div>
+      <div><b id="psHour">-</b><span>מגיע בדרך כלל</span></div>
+    </div>
+
+    <div class="sec" data-pt="main"><h4>שם</h4>
+      <input class="field" id="mInput" placeholder="מי זה? כתוב שם" autocomplete="off">
+    </div>
+
+    <div class="sec gquick" data-pt="main"><div class="set-row" style="padding:0;border:0"><div><b>🛡️ שמירה פעילה</b><small id="mGuardSum">כבויה</small></div><button class="switch" id="mGuard2" aria-label="שמירה פעילה"></button></div><button class="ghost" id="mGoSafe" style="margin-top:10px;width:100%">הגדרות בטיחות ומצב רפואי ›</button></div>
+    <div class="sec" data-pt="main"><h4>פרטים אישיים</h4>
+      <div class="frow">
+        <div><label class="mini">פנייה</label><div class="seg" id="mGender"><button data-g="m">זכר</button><button data-g="f">נקבה</button></div></div>
+        <div><label class="mini">שנת לידה</label><input class="field sm" id="mBirth" type="number" min="1900" max="2100" placeholder="למשל 1950"></div>
+        <div><label class="mini">קבוצת גיל</label><select id="mAge" class="field sm"><option value="">אוטומטי</option><option value="baby">תינוק</option><option value="child">ילד</option><option value="teen">נער</option><option value="adult">מבוגר</option><option value="senior">גיל הזהב</option></select></div>
+      </div>
+      <div class="hint2" id="mAgeHint" style="margin-top:8px"></div>
+    </div>
+
+    <div class="sec" data-pt="main"><h4>מי זה בשבילך?</h4><div id="mRoles"></div></div>
+
+    <div class="sec guardsec" data-pt="safe">
+      <div class="set-row" style="padding:0 0 12px;border:0"><div><b style="font-size:15px">שמירה פעילה</b><small>המצלמה תשים לב לנפילה, חוסר תנועה ומצבים חריגים, ותשאל אם הכל בסדר</small></div><button class="switch" id="mGuard"></button></div>
+      <div id="mGuardBody">
+        <h4>מצב רפואי וסיכונים</h4>
+        <div class="roles" id="mConds"></div>
+        <input class="field sm hidden" id="mAllergy" placeholder="אלרגיה למה? (למשל בוטנים, דבורים)" style="margin-top:8px">
+        <input class="field sm hidden" id="mCondOther" placeholder="פרט: מצב אחר" style="margin-top:8px">
+
+        <h4 style="margin-top:16px">הוראות למצב חירום</h4>
+        <textarea class="field" id="mEmInstr" rows="2" placeholder="למשל: האפיפן במגירה העליונה במטבח. לא לתת לשתות."></textarea>
+        <div class="frow" style="margin-top:8px">
+          <div style="flex:1.2"><label class="mini">איש קשר לחירום</label><input class="field sm" id="mEmName" placeholder="שם"></div>
+          <div style="flex:1"><label class="mini">טלפון</label><input class="field sm" id="mEmPhone" type="tel" placeholder="050-0000000" dir="ltr"></div>
+        </div>
+
+        <h4 style="margin-top:16px">כללי שמירה <span class="hint2" style="font-weight:400">— נקבעים אוטומטית לפי הגיל והמצב, ואפשר לשנות כל כלל</span></h4>
+        <div id="mRules"></div>
+        <div class="frow" style="margin-top:10px">
+          <div><label class="mini">כמה פעמים לשאול "הכל טוב?" לפני חירום</label><input class="field sm" id="mAskN" type="number" min="1" max="10"></div>
+          <div style="flex:1.4"><label class="mini">כל כמה זמן לחזור על השאלה</label><div id="mAskGapW"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec" data-pt="more"><h4>ברכה קולית כשהוא נכנס</h4>
+      <div style="display:flex;gap:8px"><input class="field" id="mGreet" placeholder="למשל: סבא הגיע! איזה כיף" autocomplete="off"><button class="ghost" id="mGreetTest" style="white-space:nowrap">השמע</button></div>
+      <div class="set-row" style="padding:12px 0 0;border:0"><div>התראות על האדם הזה<small>צליל, ברכה והודעה קופצת כשהוא נכנס</small></div><button class="switch" id="mAlert"></button></div>
+    </div>
+
+    <div class="sec" data-pt="day"><h4>לוח יומי</h4>
+      <div id="mSched"></div>
+      <div id="mArrivals"></div>
+      <div class="schedadd"><button data-add="arrive">+ 🚪 הגעה צפויה</button><button data-add="checkin">+ 👋 בדיקת שלום</button><button data-add="med">+ 💊 תרופה</button><button data-add="seen">+ ⏰ צריך להיראות עד</button></div>
+    </div>
+
+    <div class="sec" data-pt="more"><h4>הערות</h4><textarea class="field" id="mNotes" rows="2" placeholder="יום הולדת, אוהב קפה שחור, מגיע בימי שישי..."></textarea></div>
+
+    <div class="sec" data-pt="act"><h4>פעילות ב־7 הימים האחרונים</h4><div class="bars" id="mBars"></div>
+      <h4 style="margin-top:14px">שעות ביום</h4><div class="hours" id="mHours"></div><div class="hlabels"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div>
+    </div>
+
+    <div class="sec" data-pt="act"><h4>כניסות אחרונות</h4><div id="mVisits"></div></div>
+
+    <div class="sec" data-pt="more" id="mMergeWrap"><h4>זה בעצם אדם שכבר קיים?</h4><div class="chips" id="mChips"></div></div>
+
+    <div class="sec" data-pt="more"><h4>מבטים שנלמדו (<span id="mSampleN">0</span>)</h4><p class="hint2">לחץ על מבט שאינו של האדם הזה כדי למחוק אותו</p><div class="samples" id="mSamples"></div></div>
+  </div>
+  <div class="mfoot pfoot">
+    <button class="primary" id="mSave">שמור פרופיל</button>
+    <button class="ghost danger" id="mDel">מחק</button>
+  </div>
+</div></div>
+
+<!-- settings modal -->
+<div class="modal" id="setModal"><div class="mbox setbox">
+  <h3 style="font-size:20px;font-weight:800;margin-bottom:6px">הגדרות</h3>
+  <div class="set-row"><div>רמת ודאות לזיהוי<small id="thrTxt"></small></div><input type="range" id="thr" min="0.55" max="0.85" step="0.01"></div>
+  <div class="set-row"><div>טווח זיהוי<small>למרחקים = מזהה רחוק יותר, אבל קצת יותר איטי</small></div><select id="qSel"><option value="fast">מהיר (קרוב בלבד)</option><option value="balanced">מאוזן</option><option value="far">למרחקים</option></select></div>
+  <div class="set-row"><div>מנוע חישוב<small id="engTxt"></small></div><select id="eSel"><option value="auto">אוטומטי (הכי מהיר)</option><option value="webgl">תאימות</option></select></div>
+  <div class="set-row"><div>ברכה קולית<small>"ברוך הבא" כשמישהו מוכר נכנס</small></div><button class="switch" id="swVoice"></button></div>
+  <div class="set-row"><div>צליל התראה<small>כשנכנס מישהו לא מזוהה</small></div><button class="switch" id="swSound"></button></div>
+  <h4 class="sethead">🛡️ שמירה ובטיחות</h4>
+  <div class="gnote" style="margin:6px 0">כלי עזר בלבד. לא מכשיר רפואי ולא תחליף להשגחה. במצב חירום אמיתי התקשרו מיד למד"א 101.</div>
+  <div class="set-row"><div>שמירה פעילה<small>הפעלה וכיבוי לכל האנשים בשמירה</small></div><button class="switch" id="swGuard"></button></div>
+  <div class="lbl" style="margin-top:12px">איפה המצלמה? הבחירה מכוונת את כל הרמות</div>
+  <div class="envgrid" id="envGrid"></div>
+  <div class="hint2" id="envNote" style="margin:8px 2px 4px"></div>
+  <div class="set-row"><div>מצב פרטיות<small>בלי תמונות בהתראות, ביומן ובמסך החירום</small></div><button class="switch" id="swPriv"></button></div>
+  <div class="set-row"><div>תצוגת שלד בלבד<small>במקום וידאו רואים רק שלד ומסגרות — גם בתמונות שנשלחות</small></div><button class="switch" id="swSkel"></button></div>
+  <div class="set-row"><div>קטעי וידאו לאירועים<small>שומר 8 שניות לפני ואחרי כל אירוע, רק במכשיר</small></div><button class="switch" id="swClips"></button></div>
+  <div class="set-row"><div>חיישן רגשות<small>מזהה הבעת פנים (רגוע, שמח, עצוב, מפוחד...). זו הערכה, לא אבחנה</small></div><button class="switch" id="swEmo"></button></div>
+  <div class="set-row"><div>רגישות לתנועה<small id="sensTxt"></small></div><input type="range" id="sens" min="1" max="10" step="1"></div>
+  <div class="set-row"><div>שעות שינה<small>בלי בדיקת "לא זז" בשעות האלה</small></div><div style="display:flex;gap:6px;align-items:center"><input class="field sm" type="time" id="slFrom" style="width:96px"><span>עד</span><input class="field sm" type="time" id="slTo" style="width:96px"><button class="switch" id="swSleep"></button></div></div>
+  <div class="set-row"><div>תשובה בקול<small>לענות "כן" או "בסדר" במקום לזוז</small></div><button class="switch" id="swVA"></button></div>
+  <div class="set-row"><div>עוצמת סירנה<small id="volTxt"></small></div><input type="range" id="vol" min="0" max="1" step="0.05"></div>
+  <div class="set-row"><div>מסך דלוק<small>מונע מהמסך לכבות בזמן שמירה</small></div><button class="switch" id="swWake"></button></div>
+  <div class="set-row"><div>קול עברי<small id="voiceTxt">בדוק אם במכשיר יש קול שמדבר עברית</small></div><button class="ghost" id="voiceBtn">בדוק</button></div>
+  <div class="set-row"><div>תרגול חירום מלא<small>שאלות, סירנה, מסך חירום והתראות (מסומן כתרגול)</small></div><button class="ghost" id="drillAll">התחל תרגול</button></div>
+  <div class="set-row"><div>מסך מלא</div><button class="ghost" id="fsBtn">מסך מלא</button></div>
+  <h4 class="sethead">🎙️ חיישני שמע</h4>
+  <div class="set-row"><div><b>אני מסכים שהאפליקציה תשמע</b><small>הקול מעובד רק במחשב הזה, לא מוקלט ולא נשלח לשום מקום · <span id="sndStatus"></span></small></div><button class="switch" id="swSnd"></button></div>
+  <div id="sndBody">
+    <div class="set-row"><div>רמת רעש להתראה<small id="ndbTxt"></small></div><input type="range" id="ndb" min="8" max="45" step="1"></div>
+    <div class="meter"><i id="sndMeter"></i><b id="sndMark"></b></div>
+    <div class="set-row"><div>מנוע זיהוי קולות<small>החכם מזהה גם אזעקת עשן ושבירת זכוכית (נטען מהאינטרנט)</small></div><select id="sndEng" class="field sm" style="width:auto"><option value="auto">חכם</option><option value="basic">בסיסי (בלי הורדה)</option></select></div>
+    <div id="sndRules"></div>
+    <div class="set-row"><div>הפסקה בין התראות על אותו קול</div><span id="sndCoolW"></span></div>
+    <div class="set-row"><div>הכרזה בקול<small>למשל "נועם בוכה"</small></div><button class="switch" id="swSndSpeak"></button></div>
+    <div class="set-row"><div>הרגעה אוטומטית בבכי<small>קודם מנגן שיר ערש, ורק אם הבכי ממשיך — שולח התראה</small></div><div style="display:flex;gap:6px;align-items:center"><input class="field sm" type="number" id="sootheMin" min="1" max="60" style="width:62px"><span class="hint2" style="margin:0">דק'</span><button class="switch" id="swSoothe"></button></div></div>
+    <div class="set-row"><div>עוצמת שיר ערש ורעש לבן</div><input type="range" id="sootheVol" min="0.05" max="1" step="0.05"></div>
+  </div>
+  <h4 class="sethead">🧠 אימות חכם</h4>
+  <div class="hint2" style="margin:0 2px 8px;line-height:1.7">כשהמצלמה רואה משהו חריג (למשל מישהו שוכב על הרצפה), במקום אזעקה מיד נשלחת לאחראי בטלפון תמונה ושאלה "זה בסדר?". "זה בסדר" — לא תהיה התראה נוספת עד שיהיה שינוי. "זה חירום" — מופעלת אזעקה בבית. צריך ntfy עם שליטה מרחוק.</div>
+  <div class="set-row"><div>איך להגיב למצב חריג</div><select class="field sm" id="vMode" style="width:auto"><option value="smart">לשאול את האחראי בטלפון (מומלץ)</option><option value="local">לשאול את האדם ואז אזעקה</option></select></div>
+  <div class="set-row"><div>אזעקה אוטומטית אם אף אחד לא עונה<small>אחרי כמה דקות (0 = אף פעם). בנפילה ורעידות — לכל היותר 5 דקות</small></div><input class="field sm" type="number" id="vEsc" min="0" max="120" style="width:70px"></div>
+  <div class="set-row"><div>תזכורת לאחראי כל<small>דקות</small></div><input class="field sm" type="number" id="vRem" min="1" max="60" style="width:70px"></div>
+  <div class="set-row"><div>לשאול גם את האדם בקול רך<small>"הכל טוב?" בלי סירנה. אם עונה — הבדיקה נסגרת</small></div><button class="switch" id="swVAsk"></button></div>
+  <div class="set-row"><div>"לא זז" גם כשישן במיטה או בספה<small>כבוי: שינה במיטה או בספה לא נחשבת חוסר תנועה. סמנו מיטה וספה ב"אזורים"</small></div><button class="switch" id="swStillSleep"></button></div>
+  <h4 class="sethead">🔒 מצב בית ריק ואזורים</h4>
+  <div class="set-row"><div>מצב בית ריק<small>כל אדם שיזוהה (לא בן בית מוכר) יקפיץ התראה עם תמונה</small></div><button class="switch" id="swArm"></button></div>
+  <div class="set-row"><div>כיבוי אוטומטי כשבן בית חוזר<small>מבוגר מוכר שמזוהה מכבה את המצב</small></div><button class="switch" id="swArmAuto"></button></div>
+  <div class="set-row"><div>סירנה כשמזוהה אדם בבית ריק<small>30 שניות</small></div><button class="switch" id="swArmSiren"></button></div>
+  <div class="set-row"><div>הצגת אזורים על המסך</div><button class="switch" id="swShowZones"></button></div>
+  <div class="set-row"><div>אזור אסור — לכל אדם<small>כבוי: מתריע רק על ילדים, תינוקות וחיות</small></div><button class="switch" id="swDangerAll"></button></div>
+  <h4 class="sethead">🐾 חיות מחמד</h4>
+  <div class="set-row"><div>זיהוי כלבים וחתולים<small>מסמן אותם על המסך, מתריע אם נכנסו לאזור אסור</small></div><button class="switch" id="swPets"></button></div>
+  <div class="set-row"><div>התראה אם לא נראה<small>אחרי כמה שעות (0 = בלי)</small></div><input class="field sm" type="number" id="petMiss" min="0" max="72" style="width:70px"></div>
+  <div id="petList"></div>
+  <div class="frow" style="margin:8px 0 4px"><input class="field sm" id="petName" placeholder="שם (למשל רקסי)"><select class="field sm" id="petKind"><option value="dog">🐕 כלב</option><option value="cat">🐈 חתול</option></select><button class="ghost" id="petAdd">הוסף</button></div>
+  <h4 class="sethead" id="camSec">📷 כמה מצלמות בבית</h4>
+  <div class="hint2" style="margin:0 2px 8px;line-height:1.7">כל טלפון או טאבלט עם האפליקציה הוא מצלמה. כדי שיעבדו יחד: בכל המכשירים מפעילים ntfy עם <b>אותו שם ערוץ</b> (קוד הבית), ונותנים לכל מכשיר שם. המצלמות משתפות מי נראה ואיפה, מצבי חירום, הגעות ומצב בית ריק.</div>
+  <div class="set-row"><div>שם המצלמה הזו<small>למשל: כניסה, סלון, חדר של סבתא</small></div><input class="field sm" id="camName" style="width:150px"></div>
+  <div class="set-row"><div>סנכרון בין המצלמות</div><button class="switch" id="swSync"></button></div>
+  <div class="set-row"><div>סירנה גם כאן כשיש חירום במצלמה אחרת</div><button class="switch" id="swSyncSiren"></button></div>
+  <div class="set-row"><div>העברת אנשים ופרופילים<small>שולח את כל האנשים המוכרים לשאר המצלמות (הן יתבקשו לאשר)</small></div><button class="ghost" id="shareProf">שלח</button></div>
+  <h4 class="sethead">📲 התראות לטלפון</h4>
+  <div class="set-row"><div>ntfy<small>התקן את האפליקציה ntfy בטלפון והירשם לערוץ למטה</small></div><button class="switch" id="swNtfy"></button></div>
+  <div style="display:flex;gap:6px;margin:4px 0 10px"><input class="field sm" id="ntfyTopic" dir="ltr" style="flex:1"><button class="ghost" id="ntfyNew" title="ערוץ אקראי חדש">חדש</button><button class="ghost" id="ntfyTest">בדיקה</button></div>
+  <div class="set-row"><div>שליטה מרחוק מהטלפון<small>בהתראת חירום יופיעו כפתורים "אני מטפל", "בטל חירום" ו"השתק סירנה"</small></div><button class="switch" id="swRemote"></button></div>
+  <div class="hint2" id="remoteHelp" style="margin:0 2px 10px;line-height:1.7"></div>
+  <div class="set-row"><div>סיכום יומי לטלפון<small>כל ערב בשעה שנבחרה</small></div><div style="display:flex;gap:6px;align-items:center"><input class="field sm" type="time" id="sumAt" style="width:96px"><button class="switch" id="swSum"></button></div></div>
+  <div class="set-row"><div>כתובת דופק<small>כל 5 דקות נשלח "אני חי". שירות כמו healthchecks.io יתריע אם המכשיר כבה או התנתק</small></div></div>
+  <input class="field sm" id="hbUrl" dir="ltr" placeholder="https://hc-ping.com/..." style="margin-bottom:10px">
+  <div class="set-row"><div>Webhook<small>כתובת שתקבל הודעת חירום (לא חובה)</small></div></div>
+  <input class="field sm" id="webhook" dir="ltr" placeholder="https://..." style="margin-bottom:10px">
+  <div class="set-row"><div>התראות דפדפן</div><button class="switch" id="swNotif"></button></div>
+  <div class="set-row"><div>תזכורת חוזרת<small>כל כמה דקות לשלוח שוב כל עוד החירום פעיל (0 = בלי)</small></div><input class="field sm" type="number" id="remind" min="0" max="60" style="width:70px"></div>
+  <h4 class="sethead">כללי</h4>
+  <div class="set-row"><div>פרטי רכז נגישות<small>מופיעים בהצהרת הנגישות (חובה אם האפליקציה מוצעת לציבור)</small></div></div>
+  <div class="frow" style="margin-bottom:10px"><input class="field sm" id="a11yName" placeholder="שם"><input class="field sm" id="a11yPhone" placeholder="טלפון" dir="ltr"><input class="field sm" id="a11yEmail" placeholder="דוא״ל" dir="ltr"></div>
+  <div class="set-row"><div>בדיקת מערכת<small>מצלמה, מיקרופון, קול, אינטרנט, סוללה והתראות</small></div><button class="ghost" id="stBtn">בדוק עכשיו</button></div>
+  <div class="set-row"><div>גיבוי<small>שמירה ושחזור של כל הרשימה</small></div><div style="display:flex;gap:6px"><button class="ghost" id="expBtn">ייצוא</button><button class="ghost" id="impBtn">ייבוא</button><input type="file" id="impFile" accept=".json" class="hidden"></div></div>
+  <div class="set-row"><div>איפוס<small>מחיקת כל האנשים והיומן</small></div><button class="ghost danger" id="resetBtn">מחק הכל</button></div>
+  <div class="mfoot"><button class="primary" id="setClose">סגור</button></div>
+</div></div>
+
+<!-- wrong id -->
+<div class="modal" id="wrModal"><div class="mbox">
+  <h3 id="wrText" style="font-size:19px;font-weight:800"></h3>
+  <p style="color:var(--mut);font-size:14px;margin-top:8px;line-height:1.6">אבטל את הזיהוי של הפנים האלה ואמחק את מה שנלמד מהן, כדי שהטעות לא תחזור.</p>
+  <div class="mfoot"><button class="primary" id="wrYes">כן, זה לא הוא</button><button class="ghost" id="wrNo">ביטול</button></div>
+</div></div>
+
+<!-- confirm -->
+<div class="modal" id="cfModal"><div class="mbox">
+  <h3 id="cfText" style="font-size:18px;font-weight:700;line-height:1.5"></h3>
+  <div class="mfoot"><button class="primary" id="cfYes" style="background:var(--bad);box-shadow:none">כן, מחק</button><button class="ghost" id="cfNo">ביטול</button></div>
+</div></div>
+
+<!-- emergency -->
+<div class="emo" id="emOverlay" role="alertdialog" aria-modal="true" aria-live="assertive" aria-label="מצב חירום"><div class="embox">
+  <div class="emhead">🚨 מצב חירום</div>
+  <div class="emmain"><img id="emImg" alt=""><div><h2 id="emName"></h2><div id="emReason" class="emreason"></div><div class="emsince">תנועה אחרונה לפני <b id="emSince"></b></div></div></div>
+  <div class="emsnaps" id="emSnaps">
+    <figure><img id="emSnap1" alt=""><figcaption>רגע הזיהוי · <span id="emSnapT"></span></figcaption></figure>
+    <figure><img id="emSnap2" alt=""><figcaption>מצלמה עכשיו</figcaption></figure>
+  </div>
+  <button class="ghost emclip hidden" id="emClip">▶ צפה בקטע הווידאו של האירוע</button>
+  <div class="emmed" id="emMed"></div>
+  <div class="eminstr"><small>הוראות חירום</small><div id="emInstr"></div></div>
+  <div class="embtns">
+    <a class="embig call hidden" id="emCall" href="#"><span id="emCallTxt"></span></a>
+    <a class="embig mda" href="tel:101">חיוג למד"א · 101</a>
+  </div>
+  <div class="embtns sm"><button class="primary" id="emOk">הכל בסדר — בטל חירום</button><button class="ghost" id="emMute">השתק סירנה</button><button class="ghost" id="emCancel">הסתר מסך</button></div>
+  <div class="emmore" id="emMore"></div>
+  <div class="emnote">כלי עזר בלבד, לא מכשיר רפואי. במצב אמת התקשרו מיד ל־101.</div>
+</div></div>
+
+<div class="modal" id="lightbox"><div class="mbox" style="max-width:820px;padding:12px"><img id="lbImg" style="width:100%;border-radius:14px;display:block"><div id="lbCap" class="hint2" style="margin:10px 4px 2px;text-align:center"></div></div></div>
+
+<div class="modal" id="clipModal"><div class="mbox" style="max-width:860px"><h3 style="font-size:18px;font-weight:800;margin-bottom:10px">🎬 קטע הווידאו של האירוע</h3><div class="clipbox" id="clipBox"></div><div class="mfoot"><button class="primary" id="clipClose">סגור</button></div></div></div>
+<div class="modal" id="stModal"><div class="mbox"><h3 style="font-size:19px;font-weight:800;margin-bottom:10px">🩺 בדיקת מערכת</h3><div id="stList"></div><div class="hint2" style="margin-top:10px">אם הוגדר ערוץ התראות, נשלחה עכשיו גם התראת בדיקה לטלפון.</div><div class="mfoot"><button class="primary" id="stClose">סגור</button></div></div></div>
+<div class="modal" id="sumModal"><div class="mbox"><h3 style="font-size:19px;font-weight:800;margin-bottom:10px">📋 סיכום היום</h3><div id="sumBody" class="sumbody"></div><div class="mfoot"><button class="primary" id="sumSend">שלח לטלפון</button><button class="ghost" id="sumClose">סגור</button></div></div></div>
+<div class="modal" id="a11yModal"><div class="mbox">
+  <h3 class="mtitle">♿ נגישות</h3>
+  <div class="set-row"><div>גודל טקסט<small id="a11ySizeTxt"></small></div><div class="seg" style="width:180px"><button data-sz="1">רגיל</button><button data-sz="1.15">גדול</button><button data-sz="1.3">גדול מאוד</button></div></div>
+  <div class="set-row"><div>ניגודיות גבוהה<small>טקסט בהיר יותר וגבולות ברורים</small></div><button class="switch" data-a11y="contrast" aria-label="ניגודיות גבוהה"></button></div>
+  <div class="set-row"><div>עצירת אנימציות<small>בלי הבהובים ותנועה על המסך (גם מסך החירום)</small></div><button class="switch" data-a11y="motion" aria-label="עצירת אנימציות"></button></div>
+  <div class="set-row"><div>הדגשת פוקוס וקישורים<small>מסגרת צהובה ברורה סביב מה שנבחר במקלדת</small></div><button class="switch" data-a11y="focus" aria-label="הדגשת פוקוס"></button></div>
+  <div class="set-row"><div>גופן קריא<small>גופן פשוט וריווח גדול יותר</small></div><button class="switch" data-a11y="font" aria-label="גופן קריא"></button></div>
+  <div class="set-row"><div>כפתורים גדולים<small>אזורי לחיצה גדולים יותר</small></div><button class="switch" data-a11y="big" aria-label="כפתורים גדולים"></button></div>
+  <div class="set-row"><div>הצגת כתוביות לקול<small>כל מה שהמערכת אומרת מוצג גם בכתב</small></div><button class="switch" data-a11y="captions" aria-label="כתוביות לקול"></button></div>
+  <div class="mfoot"><button class="ghost" id="a11yReset">איפוס</button><button class="ghost" id="a11yStmtBtn">הצהרת נגישות</button><button class="primary" id="a11yClose">סגור</button></div>
+</div></div>
+<div class="modal" id="stmtModal"><div class="mbox stmt">
+  <h3 class="mtitle">הצהרת נגישות</h3>
+  <div id="stmtBody"></div>
+  <div class="mfoot"><button class="primary" id="stmtClose">סגור</button></div>
+</div></div>
+<div class="captions hidden" id="captions" aria-hidden="true"></div>
+<div class="modal" id="zoneModal"><div class="mbox">
+  <h3 class="mtitle">📍 אזור חדש</h3>
+  <div class="lbl">מה זה?</div><div class="roles" id="zTypes"></div>
+  <div class="lbl">שם (לא חובה)</div><input class="field" id="zName" placeholder="למשל: דלת הכניסה, חלון הסלון">
+  <div class="mfoot"><button class="primary" id="zSave">שמור אזור</button><button class="ghost" id="zCancel">ביטול</button></div>
+</div></div>
+<div class="modal" id="arrModal"><div class="mbox">
+  <h3 class="mtitle">🚪 הגעה צפויה</h3>
+  <div class="lbl">מי אמור להגיע?</div><select class="field" id="eWho"></select>
+  <div id="eLabelW"><div class="lbl">תיאור</div><input class="field" id="eLabel" placeholder="למשל: טכנאי מזגנים, סבתא, שליח"></div>
+  <div class="frow"><div><div class="lbl">באיזו שעה?</div><input class="field" type="time" id="eTime"></div>
+    <div><div class="lbl">טווח (לפני ואחרי)</div><select class="field" id="eWin"><option value="10">10 דקות</option><option value="15">רבע שעה</option><option value="30">חצי שעה</option><option value="45">45 דקות</option><option value="60">שעה</option><option value="90">שעה וחצי</option></select></div></div>
+  <div class="lbl">באילו ימים?</div><div class="roles days" id="eDays"></div>
+  <div class="lbl">מאיפה אמור להיכנס? (אפשר לבחור כמה)</div><div class="roles" id="eZones"></div>
+  <div class="frow"><div><div class="lbl">מי האחראי? (יופיע בהתראה)</div><input class="field" id="eResp" placeholder="למשל: אמא"></div>
+    <div><div class="lbl">ערוץ ntfy של האחראי (לא חובה)</div><input class="field" id="eTopic" dir="ltr" placeholder="ערוץ אישי"></div></div>
+  <div class="hint2" style="margin-top:8px">אם הגיע — תישלח הודעה "הגיע" עם תמונה. אם עבר הטווח ולא זוהה — התראה "עדיין לא הגיע".</div>
+  <div class="mfoot"><button class="primary" id="eSave">שמור</button><button class="ghost" id="eCancel">ביטול</button><button class="ghost danger" id="eDel">מחק</button></div>
+</div></div>
+<button class="emback hidden" id="emBack">🚨 חזרה למסך החירום</button>
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+<script src="js/01-config-state.js"></script>
+<script src="js/02-storage.js"></script>
+<script src="js/03-helpers.js"></script>
+<script src="js/04-sound-voice.js"></script>
+<script src="js/05-engine.js"></script>
+<script src="js/06-detect-loop.js"></script>
+<script src="js/07-tracking.js"></script>
+<script src="js/08-guard.js"></script>
+<script src="js/09-check-verify.js"></script>
+<script src="js/10-speech-siren.js"></script>
+<script src="js/11-alerts.js"></script>
+<script src="js/12-guard-ui.js"></script>
+<script src="js/13-env.js"></script>
+<script src="js/14-audio-sensors.js"></script>
+<script src="js/15-emotions.js"></script>
+<script src="js/16-device.js"></script>
+<script src="js/17-schedule.js"></script>
+<script src="js/18-summary.js"></script>
+<script src="js/19-remote.js"></script>
+<script src="js/20-clips.js"></script>
+<script src="js/21-soothe.js"></script>
+<script src="js/22-heartbeat-selftest.js"></script>
+<script src="js/23-hero-card.js"></script>
+<script src="js/24-zones.js"></script>
+<script src="js/25-arrivals.js"></script>
+<script src="js/26-pets.js"></script>
+<script src="js/27-armed.js"></script>
+<script src="js/28-sync.js"></script>
+<script src="js/29-draw.js"></script>
+<script src="js/30-ui.js"></script>
+<script src="js/31-rules.js"></script>
+<script src="js/32-profile.js"></script>
+<script src="js/33-settings.js"></script>
+<script src="js/34-modals.js"></script>
+<script src="js/35-a11y.js"></script>
+<script src="js/36-boot.js"></script>
+</body>
+</html>
