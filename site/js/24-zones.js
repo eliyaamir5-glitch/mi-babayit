@@ -35,22 +35,35 @@ $('zTypes').onclick = (e) => { const b = e.target.closest('[data-zt]'); if (b) {
 $('zSave').onclick = () => {
   if (!ZE.pending) return;
   const name = $('zName').value.trim() || ZONE_TYPES[ZE.type].name + (S.zones.filter((z) => z.type === ZE.type).length ? ' ' + (S.zones.filter((z) => z.type === ZE.type).length + 1) : '');
+  // האזור נשמר ביחס לתמונת הייחוס, כדי שיזוז יחד עם שאר האזורים כשהמצלמה זזה
+  if (anchorOn()) { ZE.pending.x -= ANCH.off[0]; ZE.pending.y -= ANCH.off[1]; if (!S.zones.length) { ANCH.ref = null; ANCH.off = [0, 0]; ANCH.draw = [0, 0]; delete S.anchor; } }
   S.zones.push(Object.assign({ id: 'z' + Date.now().toString(36), name, type: ZE.type }, ZE.pending));
   ZE.pending = null; ZE.b = null; save(); $('zoneModal').classList.remove('open'); renderZoneList(); toast(null, `${ZONE_TYPES[ZE.type].icon} נשמר: ${name}`, 'אפשר לסמן עוד אזור או ללחוץ "סיום"');
 };
 function zoneFormCancel() { ZE.pending = null; ZE.b = null; $('zoneModal').classList.remove('open'); }
 $('zCancel').onclick = zoneFormCancel;
 document.addEventListener('click', (e) => { const d = e.target.closest('[data-zdel]'); if (d) { const z = S.zones.find((x) => x.id === d.dataset.zdel); confirmBox(`למחוק את האזור "${z ? z.name : ''}"?`, () => { S.zones = S.zones.filter((x) => x.id !== d.dataset.zdel); save(); renderZoneList(); }); } });
-function inZone(z, px, py) { const W = canvas.width, H = canvas.height; return px >= z.x * W && px <= (z.x + z.w) * W && py >= z.y * H && py <= (z.y + z.h) * H; }
+function inZone(z, px, py) { const W = canvas.width, H = canvas.height, [x, y, w, h] = zoneRect(z); return px >= x * W && px <= (x + w) * W && py >= y * H && py <= (y + h) * H; }
 function drawZones() {
   if (!S.zones.length && !ZE.on) return;
   if (!ZE.on && !S.settings.showZones) return;
   const W = canvas.width, H = canvas.height;
+  anchorEase();
   ctx.save(); ctx.lineWidth = Math.max(2, W / 450); ctx.setLineDash([10, 7]);
   for (const z of S.zones) {
-    const t = ZONE_TYPES[z.type]; ctx.strokeStyle = t.color; ctx.fillStyle = t.color + '22';
-    ctx.fillRect(z.x * W, z.y * H, z.w * W, z.h * H); ctx.strokeRect(z.x * W, z.y * H, z.w * W, z.h * H);
-    const fs = Math.max(14, W / 60), lx = (z.x + z.w / 2) * W, ly = z.y * H + fs * 1.3;
+    const t = ZONE_TYPES[z.type], [zx, zy, zw, zh] = zoneRect(z, true), rad = Math.min(zw * W, zh * H) * 0.08;
+    // מילוי רך, מסגרת זוהרת ופינות מודגשות — האזור "מונח" על הדבר שסומן
+    ctx.setLineDash([]); ctx.fillStyle = t.color + '1c'; roundRect(zx * W, zy * H, zw * W, zh * H, rad); ctx.fill();
+    ctx.strokeStyle = t.color + '88'; ctx.lineWidth = Math.max(1.5, W / 700); ctx.stroke();
+    ctx.strokeStyle = t.color; ctx.lineWidth = Math.max(3, W / 320); ctx.lineCap = 'round'; ctx.shadowColor = t.color; ctx.shadowBlur = 10;
+    const cl = Math.min(zw * W, zh * H) * 0.18, X0 = zx * W, Y0 = zy * H, X1 = X0 + zw * W, Y1 = Y0 + zh * H;
+    ctx.beginPath();
+    ctx.moveTo(X0, Y0 + cl); ctx.lineTo(X0, Y0 + rad); ctx.quadraticCurveTo(X0, Y0, X0 + rad, Y0); ctx.lineTo(X0 + cl, Y0);
+    ctx.moveTo(X1 - cl, Y0); ctx.lineTo(X1 - rad, Y0); ctx.quadraticCurveTo(X1, Y0, X1, Y0 + rad); ctx.lineTo(X1, Y0 + cl);
+    ctx.moveTo(X1, Y1 - cl); ctx.lineTo(X1, Y1 - rad); ctx.quadraticCurveTo(X1, Y1, X1 - rad, Y1); ctx.lineTo(X1 - cl, Y1);
+    ctx.moveTo(X0 + cl, Y1); ctx.lineTo(X0 + rad, Y1); ctx.quadraticCurveTo(X0, Y1, X0, Y1 - rad); ctx.lineTo(X0, Y1 - cl);
+    ctx.stroke(); ctx.shadowBlur = 0; ctx.lineWidth = Math.max(2, W / 450);
+    const fs = Math.max(14, W / 60), lx = (zx + zw / 2) * W, ly = zy * H + fs * 1.3;
     ctx.save(); if (S.settings.mirror) { ctx.translate(lx, 0); ctx.scale(-1, 1); ctx.translate(-lx, 0); }
     ctx.setLineDash([]); ctx.font = `700 ${fs}px Heebo, Arial`; ctx.textAlign = 'center'; ctx.direction = 'rtl';
     const lab = `${t.icon} ${z.name}`, tw = ctx.measureText(lab).width + fs;

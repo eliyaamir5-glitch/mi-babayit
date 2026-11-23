@@ -4,7 +4,9 @@ let tileIdx = 0, cycle = 0;
 function grab(cv, sx, sy, sw, sh, cw, ch) {
   cw = Math.round(cw); ch = Math.round(ch);
   if (cv.width !== cw) cv.width = cw; if (cv.height !== ch) cv.height = ch;
-  cv.getContext('2d', { willReadFrequently: false }).drawImage(video, sx, sy, sw, sh, 0, 0, cw, ch);
+  const g = cv.getContext('2d', { willReadFrequently: false });
+  g.filter = nightFilter(); // בחושך: מבהירים את מה שנשלח לזיהוי
+  g.drawImage(video, sx, sy, sw, sh, 0, 0, cw, ch);
   return { sx, sy, kx: sw / cw, ky: sh / ch };
 }
 function mapFace(f, m) {
@@ -31,6 +33,7 @@ async function detectLoop(gen) {
   if (video.readyState >= 2 && !video.paused) {
     try {
       const W = video.videoWidth, H = video.videoHeight, now = Date.now();
+      nightTick(now);
       const obs = [];
       // 1) זום על כל פנים שכבר במעקב — חיתוך ברזולוציה מלאה, כך שגם פנים רחוקות מקבלות מספיק פיקסלים
       const active = tracks.filter((t) => now - t.seen < 600).sort((a, b) => b.box[2] - a.box[2]).slice(0, 4);
@@ -73,8 +76,8 @@ async function detectLoop(gen) {
       else await bodyRefine(Date.now()); // זום על כל גוף — מפרקים מדויקים גם מרחוק
       cycle++;
       process(obs);
-      lookTick(Date.now());
-      zoneTick(Date.now()); armedCheck(Date.now());
+      lookTick(Date.now()); presTick(Date.now());
+      anchorTick(Date.now()); zoneTick(Date.now()); armedCheck(Date.now());
       guardTick();
       syncRec();
       await petPass(Date.now()); // אחרי בדיקת השמירה, כדי לא לעכב אותה

@@ -10,4 +10,5 @@
   syncSettings(); render(); renderGuard(); applyA11y();
   setStatus('load', 'טוען מנוע זיהוי...');
   initEngine();
+  if (!S.settings.onboarded) openOnboard(true);
 })();

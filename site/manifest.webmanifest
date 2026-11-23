@@ -1,0 +1,19 @@
+{
+  "name": "מי בבית — שמירה חכמה על הבית",
+  "short_name": "מי בבית",
+  "description": "מצלמה שמכירה את הבית: זיהוי פנים וגוף, שמירה על אנשים, אזורים והתראות. הכול נשאר במכשיר.",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#07090f",
+  "theme_color": "#07090f",
+  "categories": ["security", "lifestyle", "health"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

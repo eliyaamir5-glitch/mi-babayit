@@ -23,12 +23,22 @@ function collectErrors(page) {
   return errors;
 }
 
+// מסך הפתיחה נפתח בכניסה ראשונה — בוחרים סביבה ומתחילים
+async function passOnboard(page, env = 'living') {
+  await expect(page.locator('#obModal')).toHaveClass(/open/);
+  await page.locator(`[data-ob="${env}"]`).click();
+  await page.locator('#obNext').click();
+  await page.locator('#obDone').click();
+  await expect(page.locator('#obModal')).not.toHaveClass(/open/);
+}
+
 test('האפליקציה עולה בלי שגיאות והמנוע נטען', async ({ page }) => {
   const errors = collectErrors(page);
   await offline(page);
   await page.goto('/');
   await expect(page).toHaveTitle('מי בבית');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+  await passOnboard(page);
   await expect(page.locator('#sText')).toContainText('מוכן', { timeout: 90_000 });
   await expect(page.locator('#startBtn')).toBeEnabled();
   expect(errors).toEqual([]);
@@ -39,6 +49,7 @@ test('המצלמה המדומה נדלקת ופנים מזוהות', async ({ pa
   const errors = collectErrors(page);
   await offline(page);
   await page.goto('/');
+  await passOnboard(page);
   await expect(page.locator('#startBtn')).toBeEnabled({ timeout: 90_000 });
   await page.locator('#startBtn').click();
   await expect(page.locator('#sText')).toHaveText('סורק', { timeout: 30_000 });

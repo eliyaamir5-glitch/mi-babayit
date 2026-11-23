@@ -20,6 +20,7 @@ module.exports = {
   use: {
     baseURL: process.env.BASE_URL || 'http://127.0.0.1:5173',
     permissions: ['camera', 'microphone'],
+    serviceWorkers: 'block', // ה-service worker עוקף את הגשת המודלים המקומית של הבדיקות
     trace: 'off',
     launchOptions: {
       executablePath,

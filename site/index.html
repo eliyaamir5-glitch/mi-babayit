@@ -8,6 +8,10 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="מי בבית">
 <title>מי בבית</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="description" content="מי בבית — שמירה חכמה על הבית. זיהוי פנים וגוף, אזורים והתראות. הכול נשאר במכשיר.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@vladmandic/human@3.3.6/dist/human.js"></script>
@@ -18,10 +22,11 @@
   <header class="top">
     <div class="logo">
       <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="10" r="3"/><path d="M7 18c1-2.5 3-3.5 5-3.5s4 1 5 3.5"/></svg></div>
-      <div><h1>מי בבית</h1><small>שמירה חכמה על הבית · גרסה 11</small></div>
+      <div><h1>מי בבית</h1><small>שמירה חכמה על הבית · גרסה 12</small></div>
     </div>
     <div class="spacer"></div>
     <div class="pill"><span class="dot load" id="sDot"></span><span id="sText">טוען מנוע זיהוי...</span></div>
+    <button class="pill envpill" id="envPill" aria-label="סביבת המצלמה — לחץ כדי לשנות" title="סביבת המצלמה — לחץ כדי לשנות"></button>
     <div class="pill gpill hidden" id="gPill"><span class="dot"></span><span id="gPillTxt"></span></div>
     <div class="pill" id="fpsPill" style="display:none"><span id="fps">0</span>&nbsp;פריימים בשנייה</div>
     <button class="iconbtn" id="a11yBtn" title="נגישות" aria-label="תפריט נגישות"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="4" r="2"/><path d="M5 8h14M12 8v6M9 21l3-7 3 7"/></svg></button>
@@ -34,7 +39,7 @@
         <video id="video" autoplay muted playsinline></video>
         <canvas id="canvas"></canvas>
         <div class="scan"></div>
-        <div class="zhint hidden" id="zHint"><b>סימון דלתות, חלונות ואזורים</b><span>גרור אצבע או עכבר על התמונה כדי לסמן מלבן סביב דלת, חלון, נקודת כניסה או אזור אסור.</span><div class="zlist" id="zList"></div></div>
+        <div class="zhint hidden" id="zHint"><b>סימון דלתות, חלונות ואזורים</b><span>גרור אצבע או עכבר על התמונה כדי לסמן מלבן סביב דלת, חלון, נקודת כניסה או אזור אסור.</span><div class="zlist" id="zList"></div><div class="zalign"><span id="zAnchorState">האזורים נצמדים לחדר: אם המצלמה זזה קצת, הם זזים איתה.</span><button type="button" class="ghost mini" id="zRealign">יישר מחדש</button></div></div>
         <div class="gbanner hidden" id="gBanner"></div>
         <div class="hud hidden" id="hud">
           <div class="tag live"><i></i>שידור חי</div>
@@ -191,6 +196,8 @@
   <div class="set-row"><div>מצב פרטיות<small>בלי תמונות בהתראות, ביומן ובמסך החירום</small></div><button class="switch" id="swPriv"></button></div>
   <div class="set-row"><div>תצוגת שלד בלבד<small>במקום וידאו רואים רק שלד ומסגרות — גם בתמונות שנשלחות</small></div><button class="switch" id="swSkel"></button></div>
   <div class="set-row"><div>קטעי וידאו לאירועים<small>שומר 8 שניות לפני ואחרי כל אירוע, רק במכשיר</small></div><button class="switch" id="swClips"></button></div>
+  <div class="set-row"><div>שיפור תמונה בחושך<small>כשהחדר חשוך, מבהיר את התמונה לפני הזיהוי. זו לא ראיית לילה — בחושך מוחלט צריך אור קטן</small></div><button class="switch" id="swNight"></button></div>
+  <div class="set-row"><div>אזורים שנצמדים לחדר<small>אם המצלמה זזה קצת, הדלת, החלון והספה שסימנת זזים איתה ונשארים במקום</small></div><button class="switch" id="swAnchor"></button></div>
   <div class="set-row"><div>זיהוי גוף חד<small>זום על כל גוף לדיוק גבוה במפרקים, וגילוי אנשים רחוקים. דורש יותר מהמכשיר — אם התמונה נהיית איטית, כבה</small></div><button class="switch" id="swBodySharp"></button></div>
   <div class="set-row"><div>שלד ופעילות על הווידאו<small>מצייר את השלד על כל גוף וכותב מה האדם עושה: עומד, יושב, הולך, שוכב</small></div><button class="switch" id="swBodyDraw"></button></div>
   <div class="set-row"><div>זיהוי לפי מראה<small>כשהפנים לא נראות (מסתובב, מתרחק) — ממשיך לזהות לפי הלבוש, השיער ומבנה הגוף שנלמדו היום. זו הערכה, לא זיהוי ודאי</small></div><button class="switch" id="swLook"></button></div>
@@ -252,6 +259,7 @@
   <div class="set-row"><div>התראות דפדפן</div><button class="switch" id="swNotif"></button></div>
   <div class="set-row"><div>תזכורת חוזרת<small>כל כמה דקות לשלוח שוב כל עוד החירום פעיל (0 = בלי)</small></div><input class="field sm" type="number" id="remind" min="0" max="60" style="width:70px"></div>
   <h4 class="sethead">כללי</h4>
+  <div class="set-row"><div>התקנה כאפליקציה<small id="instTxt">מוסיף את "מי בבית" למסך הבית, עם אייקון משלה ובמסך מלא</small></div><button class="ghost" id="instBtn">התקן</button></div>
   <div class="set-row"><div>פרטי רכז נגישות<small>מופיעים בהצהרת הנגישות (חובה אם האפליקציה מוצעת לציבור)</small></div></div>
   <div class="frow" style="margin-bottom:10px"><input class="field sm" id="a11yName" placeholder="שם"><input class="field sm" id="a11yPhone" placeholder="טלפון" dir="ltr"><input class="field sm" id="a11yEmail" placeholder="דוא״ל" dir="ltr"></div>
   <div class="set-row"><div>בדיקת מערכת<small>מצלמה, מיקרופון, קול, אינטרנט, סוללה והתראות</small></div><button class="ghost" id="stBtn">בדוק עכשיו</button></div>
@@ -335,6 +343,22 @@
   <div class="mfoot"><button class="primary" id="eSave">שמור</button><button class="ghost" id="eCancel">ביטול</button><button class="ghost danger" id="eDel">מחק</button></div>
 </div></div>
 <button class="emback hidden" id="emBack">🚨 חזרה למסך החירום</button>
+<div class="modal" id="obModal"><div class="mbox obbox">
+  <div class="obstep" id="obStep1">
+    <h3 id="obTitle">ברוכים הבאים ל"מי בבית"</h3>
+    <p class="obsub" id="obSub">איפה המצלמה עומדת? נכוון את כל ההגדרות למומלץ למקום הזה. אפשר לשנות בכל רגע.</p>
+    <div class="obgrid" id="obGrid" role="radiogroup" aria-label="בחירת סביבה"></div>
+    <div class="mfoot"><button class="primary" id="obNext">המשך</button><button class="ghost" id="obSkip">דלג — השאר כמו שזה</button></div>
+  </div>
+  <div class="obstep hidden" id="obStep2">
+    <h3 id="obTitle2"></h3>
+    <p class="obsub">זה מה שכיוונו בשבילך. הכול ניתן לשינוי בהגדרות.</p>
+    <ul class="oblist" id="obList"></ul>
+    <div class="obtip hidden" id="obTip"></div>
+    <div class="obsafe">כלי עזר בלבד. לא מכשיר רפואי ולא תחליף להשגחה. במצב חירום מתקשרים מיד למד"א 101.</div>
+    <div class="mfoot"><button class="primary" id="obDone">מתחילים</button><button class="ghost" id="obBack">חזרה</button></div>
+  </div>
+</div></div>
 <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
 
 <script src="js/01-config-state.js"></script>
@@ -343,6 +367,7 @@
 <script src="js/04-sound-voice.js"></script>
 <script src="js/05-engine.js"></script>
 <script src="js/06-detect-loop.js"></script>
+<script src="js/06b-night.js"></script>
 <script src="js/07-tracking.js"></script>
 <script src="js/08-guard.js"></script>
 <script src="js/08b-appearance.js"></script>
@@ -363,17 +388,22 @@
 <script src="js/22-heartbeat-selftest.js"></script>
 <script src="js/23-hero-card.js"></script>
 <script src="js/24-zones.js"></script>
+<script src="js/24b-anchor.js"></script>
 <script src="js/25-arrivals.js"></script>
 <script src="js/26-pets.js"></script>
 <script src="js/27-armed.js"></script>
 <script src="js/28-sync.js"></script>
 <script src="js/29-draw.js"></script>
 <script src="js/30-ui.js"></script>
+<script src="js/30b-timeline.js"></script>
 <script src="js/31-rules.js"></script>
 <script src="js/32-profile.js"></script>
 <script src="js/33-settings.js"></script>
+<script src="js/33b-settings-nav.js"></script>
+<script src="js/33c-onboard.js"></script>
 <script src="js/34-modals.js"></script>
 <script src="js/35-a11y.js"></script>
 <script src="js/36-boot.js"></script>
+<script src="js/37-pwa.js"></script>
 </body>
 </html>

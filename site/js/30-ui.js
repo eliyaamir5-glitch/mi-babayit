@@ -43,7 +43,7 @@ function render() {
     if (d !== lastDay) { html += `<div class="daysep">${d}</div>`; lastDay = d; }
     html += `<div class="log-item">${p ? `<img src="${p.thumb}">` : ''}<span>${p ? esc(nameOf(p)) : 'נמחק'}${p && p.role ? ` <span class="rbadge">${esc(p.role)}</span>` : ''} נכנס</span><span class="t">${hhmm(l.t)}</span></div>`;
   }
-  $('p-log').innerHTML = html || `<div class="empty">${ICON_EMPTY}<br>היומן ריק</div>`;
+  $('p-log').innerHTML = timelineHTML() + (html || `<div class="empty">${ICON_EMPTY}<br>היומן ריק</div>`);
 }
 document.querySelectorAll('.tab').forEach((t) => (t.onclick = () => {
   document.querySelectorAll('.tab').forEach((x) => x.classList.toggle('active', x === t));

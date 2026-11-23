@@ -96,7 +96,7 @@ document.addEventListener('click', (e) => {
     if (t === 'arm') { S.settings.armed = !S.settings.armed; save(); logSafety(null, S.settings.armed ? 'start' : 'stop', S.settings.armed ? 'מצב בית ריק הופעל' : 'מצב בית ריק כובה'); syncSend({ type: S.settings.armed ? 'arm' : 'disarm', name: 'ידני' }); toast(null, S.settings.armed ? '🔒 מצב בית ריק פעיל' : '🔓 מצב בית ריק כבוי', S.settings.armed ? 'כל אדם שיזוהה יקפיץ התראה. בן בית מוכר יכבה את המצב אוטומטית' : ''); syncSettings(); guardLogKey = ''; }
     if (t === 'arr') openArrival(null);
     if (t === 'zones') { if (!running) toast(null, 'המצלמה כבויה', 'הפעל מצלמה כדי לסמן דלתות ואזורים'); else { zoneEdit(true); $('stage').scrollIntoView({ behavior: 'smooth', block: 'center' }); } }
-    if (t === 'cams') { $('setBtn').click(); setTimeout(() => { const el = $('camSec'); el && el.scrollIntoView({ block: 'start' }); }, 120); }
+    if (t === 'cams') { $('setBtn').click(); setTimeout(() => setOpenSec('camSec'), 120); }
     if (t === 'sum') { $('sumBody').innerHTML = dailySummary().map((l) => `<p>${esc(l)}</p>`).join(''); $('sumModal').classList.add('open'); }
     if (t === 'lull' || t === 'noise') { if (SOOTHE.node && SOOTHE.kind === (t === 'lull' ? 'lullaby' : 'noise')) sootheStop(); else sootheStart(t === 'lull' ? 'lullaby' : 'noise', S.settings.snd.sootheMin || 15); }
     guardTouch = 0; return;
