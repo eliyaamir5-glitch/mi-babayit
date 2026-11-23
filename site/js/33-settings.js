@@ -20,7 +20,7 @@ function syncSettings() {
   $('swWake').classList.toggle('on', st.wakeLock); $('swNtfy').classList.toggle('on', st.ntfyOn);
   $('envGrid').innerHTML = Object.entries(ENVS).map(([k, e]) => `<button data-env="${k}" class="${st.env === k ? 'on' : ''}"><span>${e.icon}</span>${e.name}</button>`).join('');
   $('envNote').textContent = envCfg().note;
-  $('swPriv').classList.toggle('on', !!st.privacy); $('swEmo').classList.toggle('on', !!st.emotions); $('swLook').classList.toggle('on', st.looks !== false);
+  $('swPriv').classList.toggle('on', !!st.privacy); $('swEmo').classList.toggle('on', !!st.emotions); $('swLook').classList.toggle('on', st.looks !== false); $('swBodySharp').classList.toggle('on', st.bodySharp !== false); $('swBodyDraw').classList.toggle('on', st.bodyDraw !== false);
   const sd = st.snd; $('swSnd').classList.toggle('on', sd.on); $('sndBody').classList.toggle('hidden', !sd.on);
   $('ndb').value = sd.noiseDb; $('ndbTxt').textContent = `${sd.noiseDb} דציבל מעל רעש הרקע · ` + (sd.noiseDb < 18 ? 'רגיש מאוד (חדר שקט)' : sd.noiseDb > 32 ? 'רק רעש חזק' : 'מאוזן');
   $('sndEng').value = sd.engine === 'basic' ? 'basic' : 'auto'; $('swSndSpeak').classList.toggle('on', !!sd.speakNotify);
@@ -85,6 +85,8 @@ $('drillAll').onclick = () => {
 $('envGrid').onclick = (e) => { const b = e.target.closest('[data-env]'); if (b) applyEnv(b.dataset.env); };
 $('swPriv').onclick = tgl('privacy');
 $('swEmo').onclick = tgl('emotions');
+$('swBodySharp').onclick = () => { S.settings.bodySharp = S.settings.bodySharp === false; save(); syncSettings(); };
+$('swBodyDraw').onclick = () => { S.settings.bodyDraw = S.settings.bodyDraw === false; save(); syncSettings(); };
 $('swLook').onclick = () => { S.settings.looks = S.settings.looks === false; save(); syncSettings(); };
 $('swSnd').onclick = () => { S.settings.snd.on = !S.settings.snd.on; save(); syncSettings(); syncAudio(); };
 $('ndb').oninput = (e) => { S.settings.snd.noiseDb = +e.target.value; save(); syncSettings(); };

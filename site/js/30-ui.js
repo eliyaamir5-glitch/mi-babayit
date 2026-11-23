@@ -6,7 +6,7 @@ function personRow(p, here) {
   return `<div class="person ${p.name ? '' : 'unk'} ${here ? 'here' : ''}" data-id="${p.id}" tabindex="0" role="button" aria-label="פרופיל של ${esc(nameOf(p))}">
     <div class="avwrap"><img class="avatar" src="${p.thumb || ''}"><span class="live"></span></div>
     <div class="pinfo"><div class="pname">${esc(nameOf(p))}${p.role ? `<span class="rbadge">${esc(p.role)}</span>` : ''}</div>
-    <div class="pmeta">${here ? (faceIds().has(p.id) ? 'מול המצלמה עכשיו' : 'בחדר עכשיו · מזוהה לפי מראה') : 'נראה ' + ago(p.lastSeen)} · ${p.visits} כניסות</div></div>
+    <div class="pmeta">${here ? (faceIds().has(p.id) ? 'מול המצלמה עכשיו' : 'בחדר עכשיו · מזוהה לפי מראה') + (personActText(p.id) ? ' · ' + personActText(p.id) : '') : 'נראה ' + ago(p.lastSeen)} · ${p.visits} כניסות</div></div>
     ${p.name ? '' : '<span class="chip">תן שם</span>'}
   </div>`;
 }
@@ -17,16 +17,17 @@ function render() {
   const kn = S.people.filter((p) => p.name).sort((a, b) => b.lastSeen - a.lastSeen);
   const nowP = S.people.filter((p) => here.has(p.id));
   const unidentified = tracks.filter((t) => !t.pid && Date.now() - t.seen < 1500).length;
+  const faceless = facelessBodies(Date.now());
   const today = S.log.filter((l) => new Date(l.t).toDateString() === new Date().toDateString()).length;
 
   $('tN').textContent = nowP.length; $('tU').textContent = unk.length; $('tK').textContent = kn.length;
   $('tU').classList.toggle('hot', unk.length > 0);
-  $('stNow').textContent = nowP.length + unidentified; $('stKnown').textContent = kn.length; $('stUnk').textContent = unk.length; $('stToday').textContent = today;
-  const total = nowP.length + unidentified;
+  $('stNow').textContent = nowP.length + unidentified + faceless; $('stKnown').textContent = kn.length; $('stUnk').textContent = unk.length; $('stToday').textContent = today;
+  const total = nowP.length + unidentified + faceless;
   $('hudCount').textContent = total ? (total === 1 ? 'אדם אחד מול המצלמה' : `${total} אנשים מול המצלמה`) : 'אין אף אחד מול המצלמה';
 
-  $('p-now').innerHTML = nowP.length || unidentified
-    ? nowP.map((p) => personRow(p, true)).join('') + (unidentified ? `<div class="empty" style="padding:14px">מזהה ${unidentified === 1 ? 'פנים נוספות' : unidentified + ' פנים נוספות'}...</div>` : '')
+  $('p-now').innerHTML = nowP.length || unidentified || faceless
+    ? nowP.map((p) => personRow(p, true)).join('') + (faceless ? `<div class="empty" style="padding:14px">${faceless === 1 ? 'אדם אחד שהפנים שלו לא נראות' : faceless + ' אנשים שהפנים שלהם לא נראות'}</div>` : '') + (unidentified ? `<div class="empty" style="padding:14px">מזהה ${unidentified === 1 ? 'פנים נוספות' : unidentified + ' פנים נוספות'}...</div>` : '')
     : `<div class="empty">${ICON_EMPTY}<br>${running ? 'אף אחד לא מול המצלמה כרגע' : 'המצלמה כבויה'}</div>`;
   $('p-unk').innerHTML = unk.length ? unk.map((p) => personRow(p, here.has(p.id))).join('') : `<div class="empty">${ICON_EMPTY}<br>אין פנים חדשות.<br>מי שלא מוכר למערכת יופיע כאן.</div>`;
   if (!kn.length) $('p-known').innerHTML = `<div class="empty">${ICON_EMPTY}<br>עוד לא נתת שם לאף אחד.</div>`;

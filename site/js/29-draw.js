@@ -45,7 +45,8 @@ function drawLoop() {
     ctx.restore();
     ctx.globalAlpha = 1;
   }
-  if (guardActive()) drawBodies(now); else drawLooks(now);
+  bodySmooth(now);
+  if (guardActive()) drawBodies(now); else drawSkeletons(now);
   drawPets(now);
   $('fps').textContent = fpsT.length;
   requestAnimationFrame(drawLoop);
@@ -65,7 +66,7 @@ function drawBodies(now) {
     const col = gp ? (gp.state === 'emergency' ? '#ff5470' : gp.state === 'asking' ? '#ffb547' : '#00d4ff') : 'rgba(255,255,255,.35)';
     ctx.strokeStyle = col; ctx.lineWidth = Math.max(2, canvas.width / 400); ctx.lineCap = 'round'; ctx.globalAlpha = 0.75;
     ctx.beginPath();
-    for (const [a, c] of BONES) { const A = KP(b, a), C = KP(b, c); if (A && C) { ctx.moveTo(A[0], A[1]); ctx.lineTo(C[0], C[1]); } }
+    for (const [a, c] of BONES) { const A = DKP(b, a, now), C = DKP(b, c, now); if (A && C) { ctx.moveTo(A[0], A[1]); ctx.lineTo(C[0], C[1]); } }
     ctx.stroke();
     ctx.fillStyle = col; for (const k in b.kp) if (b.kp[k][2] > 0.3) { ctx.beginPath(); ctx.arc(b.kp[k][0], b.kp[k][1], ctx.lineWidth * 1.4, 0, 7); ctx.fill(); }
     ctx.globalAlpha = 1;

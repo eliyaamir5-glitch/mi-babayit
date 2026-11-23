@@ -35,6 +35,7 @@ test('האפליקציה עולה בלי שגיאות והמנוע נטען', as
 });
 
 test('המצלמה המדומה נדלקת ופנים מזוהות', async ({ page }) => {
+  test.setTimeout(300_000); // בלי כרטיס גרפי הזיהוי איטי מאוד
   const errors = collectErrors(page);
   await offline(page);
   await page.goto('/');
@@ -46,6 +47,8 @@ test('המצלמה המדומה נדלקת ופנים מזוהות', async ({ pa
   await expect.poll(() => page.evaluate('S.people.length'), { timeout: 60_000 }).toBeGreaterThan(0);
   // זיהוי לפי מראה: הגוף משויך לפנים, והלבוש של היום נלמד
   await expect.poll(() => page.evaluate('S.people[0].look ? S.people[0].look.s.length : 0'), { timeout: 60_000 }).toBeGreaterThan(0);
+  // זיהוי גוף חד: הזום על הגוף רץ, והפעילות מופיעה ברשימה
+  await expect.poll(() => page.evaluate('bodies.some((b) => b.sharp)'), { timeout: 60_000 }).toBe(true);
   // "מסתובב": מפסיקים לקבל פנים — האדם נשאר מזוהה לפי הגוף, והרשימה אומרת את זה
   await page.evaluate('process = function () { tracks = []; render(); }');
   await expect.poll(() => page.evaluate('[...lookPresent().values()].join()'), { timeout: 60_000 }).toMatch(/track|look/);

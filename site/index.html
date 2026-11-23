@@ -18,7 +18,7 @@
   <header class="top">
     <div class="logo">
       <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="10" r="3"/><path d="M7 18c1-2.5 3-3.5 5-3.5s4 1 5 3.5"/></svg></div>
-      <div><h1>מי בבית</h1><small>שמירה חכמה על הבית · גרסה 10</small></div>
+      <div><h1>מי בבית</h1><small>שמירה חכמה על הבית · גרסה 11</small></div>
     </div>
     <div class="spacer"></div>
     <div class="pill"><span class="dot load" id="sDot"></span><span id="sText">טוען מנוע זיהוי...</span></div>
@@ -191,6 +191,8 @@
   <div class="set-row"><div>מצב פרטיות<small>בלי תמונות בהתראות, ביומן ובמסך החירום</small></div><button class="switch" id="swPriv"></button></div>
   <div class="set-row"><div>תצוגת שלד בלבד<small>במקום וידאו רואים רק שלד ומסגרות — גם בתמונות שנשלחות</small></div><button class="switch" id="swSkel"></button></div>
   <div class="set-row"><div>קטעי וידאו לאירועים<small>שומר 8 שניות לפני ואחרי כל אירוע, רק במכשיר</small></div><button class="switch" id="swClips"></button></div>
+  <div class="set-row"><div>זיהוי גוף חד<small>זום על כל גוף לדיוק גבוה במפרקים, וגילוי אנשים רחוקים. דורש יותר מהמכשיר — אם התמונה נהיית איטית, כבה</small></div><button class="switch" id="swBodySharp"></button></div>
+  <div class="set-row"><div>שלד ופעילות על הווידאו<small>מצייר את השלד על כל גוף וכותב מה האדם עושה: עומד, יושב, הולך, שוכב</small></div><button class="switch" id="swBodyDraw"></button></div>
   <div class="set-row"><div>זיהוי לפי מראה<small>כשהפנים לא נראות (מסתובב, מתרחק) — ממשיך לזהות לפי הלבוש, השיער ומבנה הגוף שנלמדו היום. זו הערכה, לא זיהוי ודאי</small></div><button class="switch" id="swLook"></button></div>
   <div class="set-row"><div>חיישן רגשות<small>מזהה הבעת פנים (רגוע, שמח, עצוב, מפוחד...). זו הערכה, לא אבחנה</small></div><button class="switch" id="swEmo"></button></div>
   <div class="set-row"><div>רגישות לתנועה<small id="sensTxt"></small></div><input type="range" id="sens" min="1" max="10" step="1"></div>
@@ -344,6 +346,7 @@
 <script src="js/07-tracking.js"></script>
 <script src="js/08-guard.js"></script>
 <script src="js/08b-appearance.js"></script>
+<script src="js/08c-body.js"></script>
 <script src="js/09-check-verify.js"></script>
 <script src="js/10-speech-siren.js"></script>
 <script src="js/11-alerts.js"></script>

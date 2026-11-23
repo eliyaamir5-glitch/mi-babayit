@@ -8,6 +8,15 @@ const asts = files.map((f) => acorn.parse(fs.readFileSync(path.join(dir, f), 'ut
 const declIn = {};
 asts.forEach((a, i) => a.body.forEach((n) => { if (n.type === 'FunctionDeclaration') declIn[n.id.name] = i; }));
 let bad = 0;
+// שם שמוגדר ברמה העליונה בשני קבצים (const/let/class) — הקובץ השני נכשל כולו בטעינה
+const seen = {};
+asts.forEach((a, i) => a.body.forEach((n) => {
+  const names = n.type === 'VariableDeclaration' ? n.declarations.filter((d) => d.id.type === 'Identifier').map((d) => d.id.name) : n.type === 'ClassDeclaration' || n.type === 'FunctionDeclaration' ? [n.id.name] : [];
+  for (const nm of names) {
+    if (seen[nm] !== undefined && seen[nm] !== i) { bad++; console.log(`${files[i]}:${n.loc.start.line}  ${nm}  כבר מוגדר ב-${files[seen[nm]]}`); }
+    else seen[nm] = i;
+  }
+}));
 asts.forEach((a, i) => {
   for (const stmt of a.body) {
     if (stmt.type === 'FunctionDeclaration') continue;

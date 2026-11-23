@@ -1,6 +1,6 @@
 {
   "name": "mi-babayit",
-  "version": "10.0.0",
+  "version": "11.0.0",
   "private": true,
   "description": "מי בבית — שמירה חכמה על הבית, בדפדפן בלבד",
   "scripts": {

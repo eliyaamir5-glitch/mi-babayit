@@ -56,10 +56,13 @@ async function detectLoop(gen) {
       }
       let gotBody = false;
       for (const m of passes) {
-        const useBody = (guarding || lookOn()) && m.cv === CV.full;
-        const r = await human.detect(m.cv, { body: { enabled: useBody, modelPath: BODY_MODEL, maxDetected: 5, minConfidence: 0.2 }, object: { enabled: false }, face: { enabled: true, emotion: { enabled: !!S.settings.emotions } } });
+        const wantBody = guarding || lookOn();
+        const useBody = wantBody && m.cv === CV.full;
+        const farBody = wantBody && m.cv === CV.tile && bodySharpOn();
+        const r = await human.detect(m.cv, { body: { enabled: useBody || farBody, modelPath: BODY_MODEL, maxDetected: 5, minConfidence: 0.2 }, object: { enabled: false }, face: { enabled: true, emotion: { enabled: !!S.settings.emotions } } });
         const fs = (r.face || []).filter((f) => f.embedding && f.embedding.length);
-        if (useBody) { bodies = (r.body || []).map((b) => mapBody(b, m)).filter((b) => b.score > 0.2); gotBody = true; }
+        if (useBody) { bodies = bodyMerge((r.body || []).map((b) => mapBody(b, m)).filter((b) => b.score > 0.2), bodies, now); gotBody = true; }
+        else if (farBody) bodyAddFar((r.body || []).map((b) => mapBody(b, m)), now);
         for (const f of fs) {
           const o = mapFace(f, m);
           if (overlapsAny(o.box, obs.map((x) => x.box)) || overlapsAny(o.box, active.map((t) => t.box))) continue;
@@ -67,6 +70,7 @@ async function detectLoop(gen) {
         }
       }
       if (!guarding && !lookOn()) bodies = [];
+      else await bodyRefine(Date.now()); // זום על כל גוף — מפרקים מדויקים גם מרחוק
       cycle++;
       process(obs);
       lookTick(Date.now());
