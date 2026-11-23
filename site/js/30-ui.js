@@ -1,11 +1,12 @@
 /* ---------------- UI ---------------- */
-function presentIds() { return new Set(tracks.filter((t) => t.pid && Date.now() - t.seen < 1500).map((t) => t.pid)); }
+function presentIds() { const s = new Set(tracks.filter((t) => t.pid && Date.now() - t.seen < 1500).map((t) => t.pid)); lookPresent().forEach((by, pid) => s.add(pid)); return s; }
+function faceIds() { return new Set(tracks.filter((t) => t.pid && Date.now() - t.seen < 1500).map((t) => t.pid)); }
 const ICON_EMPTY = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>';
 function personRow(p, here) {
   return `<div class="person ${p.name ? '' : 'unk'} ${here ? 'here' : ''}" data-id="${p.id}" tabindex="0" role="button" aria-label="פרופיל של ${esc(nameOf(p))}">
     <div class="avwrap"><img class="avatar" src="${p.thumb || ''}"><span class="live"></span></div>
     <div class="pinfo"><div class="pname">${esc(nameOf(p))}${p.role ? `<span class="rbadge">${esc(p.role)}</span>` : ''}</div>
-    <div class="pmeta">${here ? 'מול המצלמה עכשיו' : 'נראה ' + ago(p.lastSeen)} · ${p.visits} כניסות</div></div>
+    <div class="pmeta">${here ? (faceIds().has(p.id) ? 'מול המצלמה עכשיו' : 'בחדר עכשיו · מזוהה לפי מראה') : 'נראה ' + ago(p.lastSeen)} · ${p.visits} כניסות</div></div>
     ${p.name ? '' : '<span class="chip">תן שם</span>'}
   </div>`;
 }

@@ -70,6 +70,7 @@ function handRaised(b) {
 }
 function associateBodies(now) {
   for (const b of bodies) {
+    if (b.pid && b.by && lookOn()) continue; // כבר שויך במודול הזיהוי לפי מראה (פנים / רצף / מראה)
     const h = headPoint(b);
     let best = null;
     if (h) for (const t of tracks) {

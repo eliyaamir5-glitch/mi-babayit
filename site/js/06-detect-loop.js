@@ -56,7 +56,7 @@ async function detectLoop(gen) {
       }
       let gotBody = false;
       for (const m of passes) {
-        const useBody = guarding && m.cv === CV.full;
+        const useBody = (guarding || lookOn()) && m.cv === CV.full;
         const r = await human.detect(m.cv, { body: { enabled: useBody, modelPath: BODY_MODEL, maxDetected: 5, minConfidence: 0.2 }, object: { enabled: false }, face: { enabled: true, emotion: { enabled: !!S.settings.emotions } } });
         const fs = (r.face || []).filter((f) => f.embedding && f.embedding.length);
         if (useBody) { bodies = (r.body || []).map((b) => mapBody(b, m)).filter((b) => b.score > 0.2); gotBody = true; }
@@ -66,9 +66,10 @@ async function detectLoop(gen) {
           obs.push(o);
         }
       }
-      if (!guarding) bodies = [];
+      if (!guarding && !lookOn()) bodies = [];
       cycle++;
       process(obs);
+      lookTick(Date.now());
       zoneTick(Date.now()); armedCheck(Date.now());
       guardTick();
       syncRec();

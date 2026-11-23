@@ -12,7 +12,7 @@ function armedCheck(now) {
       toast(p, `🔓 ${p.name} בבית`, 'מצב בית ריק כובה אוטומטית'); sendAlerts(p, 'info', `מצב בית ריק כובה: ${p.name} זוהה בבית`); syncSend({ type: 'disarm', name: p.name }); return;
     }
   }
-  const strangers = live.filter((t) => { const p = t.pid && byId(t.pid); return !(p && p.name) && now - t.born > 1500; }).length + bodies.filter((b) => !b.pid).length;
+  const strangers = live.filter((t) => { const p = t.pid && byId(t.pid); return !(p && p.name) && now - t.born > 1500; }).length + (guardActive() ? bodies.filter((b) => !b.pid || b.by === 'look').length : 0);
   if (strangers && now - ARM.last > 60000) {
     ARM.last = now; const snap = snapDataURL();
     logSafety(null, 'emergency', 'מצב בית ריק: זוהה אדם', snap); notifyEvent(null, 'intruder', 'זוהה אדם בבית כשמצב "בית ריק" פעיל');

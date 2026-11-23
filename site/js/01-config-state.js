@@ -35,7 +35,7 @@ let human = null;
 let S = { people: [], log: [], counter: 1, settings: { threshold: 0.68, voice: true, sound: true, mirror: true, quality: 'balanced', engine: 'auto', v4: true,
   guardOn: true, motionSens: 5, sleepOn: false, sleepFrom: '23:00', sleepTo: '06:00', voiceAnswer: true, sirenVol: 0.8, wakeLock: true,
   ntfyOn: false, ntfyTopic: '', ntfyServer: 'https://ntfy.sh', webhook: '', notifOn: false, remindMin: 3,
-  env: 'living', privacy: false, emotions: true, skeleton: false, clips: true, remoteOn: true, summaryOn: false, summaryAt: '21:00', heartbeat: '', sootheVol: 0.35,
+  env: 'living', privacy: false, emotions: true, looks: true, skeleton: false, clips: true, remoteOn: true, summaryOn: false, summaryAt: '21:00', heartbeat: '', sootheVol: 0.35,
   snd: { on: false, engine: 'auto', noiseDb: 26, cooldown: 60, speakNotify: true, soothe: false, sootheMin: 5,
     cry: { on: false, sec: 4, act: 'notify' }, scream: { on: true, act: 'ask' }, loud: { on: true, act: 'notify' }, smoke: { on: true, act: 'emergency' }, glass: { on: false, act: 'notify' }, bark: { on: false, act: 'notify' } },
   verifyMode: 'smart', autoEscMin: 10, verifyRemind: 3, verifyAsk: true, stillWhileSleep: false, camName: '', devId: '', syncOn: true, syncSiren: false, armed: false, armSiren: false, armAuto: true, showZones: true, dangerAll: false, dangerSpeak: true, pets: { on: false, missH: 0 } }, safety: [] };

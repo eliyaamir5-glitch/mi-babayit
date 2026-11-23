@@ -44,5 +44,15 @@ test('המצלמה המדומה נדלקת ופנים מזוהות', async ({ pa
   // פנים במעקב, ואחרי כמה פריימים נוצר אדם "לא מזוהה" שנשמר במכשיר
   await expect.poll(() => page.evaluate('tracks.length'), { timeout: 60_000 }).toBeGreaterThan(0);
   await expect.poll(() => page.evaluate('S.people.length'), { timeout: 60_000 }).toBeGreaterThan(0);
+  // זיהוי לפי מראה: הגוף משויך לפנים, והלבוש של היום נלמד
+  await expect.poll(() => page.evaluate('S.people[0].look ? S.people[0].look.s.length : 0'), { timeout: 60_000 }).toBeGreaterThan(0);
+  // "מסתובב": מפסיקים לקבל פנים — האדם נשאר מזוהה לפי הגוף, והרשימה אומרת את זה
+  await page.evaluate('process = function () { tracks = []; render(); }');
+  await expect.poll(() => page.evaluate('[...lookPresent().values()].join()'), { timeout: 60_000 }).toMatch(/track|look/);
+  await expect(page.locator('#p-now .pmeta')).toContainText('מזוהה לפי מראה', { timeout: 30_000 });
+  // בפרופיל מופיעים צבעי הלבוש שנלמדו
+  await page.locator('#p-now .person').click();
+  await expect(page.locator('#mLook .lookchip').first()).toBeVisible();
+  await expect(page.locator('#mLook')).toContainText('מראה היום');
   expect(errors).toEqual([]);
 });

@@ -15,7 +15,8 @@ module.exports = async (config) => {
     const img = new Image(); img.src = 'data:image/jpeg;base64,' + src; await img.decode();
     const c = document.createElement('canvas'); c.width = 1280; c.height = 720;
     const x = c.getContext('2d'); x.imageSmoothingQuality = 'high';
-    x.drawImage(img, 366, 0, 160, 90, 0, 0, 1280, 720); // האיש בתמונה השלישית בשורה העליונה
+    x.fillStyle = '#555'; x.fillRect(0, 0, 1280, 720);
+    x.drawImage(img, 166, 0, 150, 158, 298, 0, 684, 720); // האישה בתמונה השנייה בשורה העליונה: פנים, כתפיים וחולצה
     return c.toDataURL('image/jpeg', 0.92).split(',')[1];
   }, src);
   await browser.close();

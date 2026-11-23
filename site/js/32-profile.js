@@ -105,6 +105,7 @@ function renderStats(p) {
   $('psVisits').textContent = p.visits;
   $('psFirst').textContent = ago(p.firstSeen);
   $('psLast').textContent = presentIds().has(p.id) ? 'עכשיו' : ago(p.lastSeen);
+  renderLook(p);
   const hrs = new Array(24).fill(0); visits.forEach((v) => hrs[new Date(v.t).getHours()]++);
   const maxH = Math.max(...hrs);
   $('psHour').textContent = maxH ? `${String(hrs.indexOf(maxH)).padStart(2, '0')}:00` : '-';

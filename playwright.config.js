@@ -13,7 +13,7 @@ module.exports = {
   globalSetup: require.resolve('./tests/make-fake-camera.js'),
   reporter: [['list']],
   webServer: {
-    command: 'npx sirv site --port 5173 --host 127.0.0.1',
+    command: 'npx sirv site --dev --port 5173 --host 127.0.0.1',
     url: 'http://127.0.0.1:5173',
     reuseExistingServer: true,
   },

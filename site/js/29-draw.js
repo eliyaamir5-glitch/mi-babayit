@@ -45,7 +45,7 @@ function drawLoop() {
     ctx.restore();
     ctx.globalAlpha = 1;
   }
-  if (guardActive()) drawBodies(now);
+  if (guardActive()) drawBodies(now); else drawLooks(now);
   drawPets(now);
   $('fps').textContent = fpsT.length;
   requestAnimationFrame(drawLoop);
@@ -72,7 +72,7 @@ function drawBodies(now) {
     // אדם בשמירה שהפנים שלו לא נראות — תווית לפי הגוף
     if (p && !tracks.some((t) => t.pid === p.id && now - t.seen < 600)) {
       const h = headPoint(b) || [b.box[0] + b.box[2] / 2, b.box[1]];
-      const fs = Math.max(16, canvas.width / 50), label = `${p.name} · ${gp ? STATE_NAMES[gp.state] : ''}`;
+      const fs = Math.max(16, canvas.width / 50), label = `${nameOf(p)} · ${gp ? STATE_NAMES[gp.state] : 'לפי מראה'}${gp && b.by === 'look' ? ' · לפי מראה' : ''}`;
       ctx.save(); if (S.settings.mirror) { ctx.translate(h[0], 0); ctx.scale(-1, 1); ctx.translate(-h[0], 0); }
       ctx.font = `700 ${fs}px Heebo, Arial`; const tw = ctx.measureText(label).width + fs;
       ctx.fillStyle = 'rgba(8,10,16,.82)'; roundRect(h[0] - tw / 2, h[1] - fs * 2.6, tw, fs * 1.6, fs * 0.6); ctx.fill();

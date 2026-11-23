@@ -65,7 +65,7 @@ function zoneTick(now) {
   if (!S.zones.length) return;
   const subs = [];
   for (const t of tracks) { if (now - t.seen > 600) continue; const p = t.pid && byId(t.pid); subs.push({ key: 't' + (p ? p.id : 'u' + t.id), p, kind: 'person', x: t.box[0] + t.box[2] / 2, y: t.box[1] + t.box[3] / 2 }); }
-  for (const b of bodies) { if (tracks.some((t) => t.pid && t.pid === b.pid && now - t.seen < 600)) continue; const c = torso(b); const pt = c ? c.sh : [b.box[0] + b.box[2] / 2, b.box[1] + b.box[3] / 3]; const p = b.pid && byId(b.pid); subs.push({ key: 'b' + (p ? p.id : Math.round(b.box[0] / 50)), p, kind: 'person', x: pt[0], y: pt[1] }); }
+  for (const b of bodies) { if ((b.ft && now - b.ft.seen < 600) || tracks.some((t) => t.pid && t.pid === b.pid && now - t.seen < 600)) continue; const c = torso(b); const pt = c ? c.sh : [b.box[0] + b.box[2] / 2, b.box[1] + b.box[3] / 3]; const p = b.pid && byId(b.pid); subs.push({ key: 'b' + (p ? p.id : Math.round(b.box[0] / 50)), p, kind: 'person', x: pt[0], y: pt[1] }); }
   for (const o of PET.obs) { if (now - o.t > 2500) continue; subs.push({ key: 'pet' + (o.pet ? o.pet.id : o.kind), pet: o.pet, petKind: o.kind, kind: 'pet', x: o.box[0] + o.box[2] / 2, y: o.box[1] + o.box[3] / 2 }); }
   for (const s of subs) for (const z of S.zones) {
     const k = s.key + ':' + z.id, st = ZST[k] || (ZST[k] = { n: 0, in: false, t: 0 });
