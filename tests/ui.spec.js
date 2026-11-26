@@ -124,8 +124,23 @@ test('דוח אבחון: מספרים בלבד, בלי שמות', async ({ page 
   await page.locator('.setsec-h', { hasText: 'כללי' }).click();
   await page.locator('#dgBtn').click();
   const txt = await page.locator('#dgText').inputValue();
-  expect(txt).toContain('גרסה 13');
+  expect(txt).toContain('גרסה 14');
   expect(txt).toContain('זוהה=2');
   expect(txt).toContain('סיכון לשם שגוי): 1 מתוך 2');
   expect(txt).not.toContain('שם סודי');
+});
+
+test('מנוע אמין כברירת מחדל, שיפור בחושך כבוי, וסינון "פנים" שאינן פנים', async ({ page }) => {
+  await page.waitForFunction(() => S.settings.v14 === true);
+  const r = await page.evaluate(() => ({
+    engine: S.settings.engine, night: nightOn(),
+    ok: faceOk({ embedding: [1], box: [0, 0, 100, 110], boxScore: 0.8 }),
+    tall: faceOk({ embedding: [1], box: [0, 0, 60, 300], boxScore: 0.8 }),
+    wide: faceOk({ embedding: [1], box: [0, 0, 300, 80], boxScore: 0.8 }),
+    weak: faceOk({ embedding: [1], box: [0, 0, 100, 100], boxScore: 0.3 }),
+    sane: engineSane({ face: [{ box: [530, 55, 120, 120], embedding: [1], boxScore: 0.93 }] }).ok,
+    none: engineSane({ face: [] }).ok,
+    moved: engineSane({ face: [{ box: [100, 300, 120, 120], embedding: [1], boxScore: 0.9 }] }).ok,
+  }));
+  expect(r).toEqual({ engine: 'webgl', night: false, ok: true, tall: false, wide: false, weak: false, sane: true, none: false, moved: false });
 });

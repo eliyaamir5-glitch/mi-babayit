@@ -4,7 +4,7 @@ const { test, expect } = require('@playwright/test');
 test.beforeEach(async ({ page }) => {
   await page.route(/cdn\.jsdelivr\.net|fonts\.(googleapis|gstatic)\.com/, (r) => r.abort());
   await page.goto('/');
-  await page.waitForFunction(() => S.settings.v13 === true); // מחכים שהאפליקציה תסיים לעלות
+  await page.waitForFunction(() => S.settings.v14 === true); // מחכים שהאפליקציה תסיים לעלות
   await page.evaluate(() => {
     // "חדר" מצויר גדול מהפריים; המצלמה רואה חלון ממנו, ואפשר להזיז אותה
     const room = document.createElement('canvas'); room.width = 1800; room.height = 1100;

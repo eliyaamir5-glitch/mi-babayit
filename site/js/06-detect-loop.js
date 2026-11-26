@@ -13,8 +13,10 @@ function mapFace(f, m) {
   const b = f.box;
   return { box: [m.sx + b[0] * m.kx, m.sy + b[1] * m.ky, b[2] * m.kx, b[3] * m.ky], embedding: f.embedding, score: f.score, rotation: f.rotation, age: f.age, emotion: f.emotion };
 }
+// סינון זיהויי שווא: פנים אמיתיות הן בערך ריבוע. מלבן צר וגבוה (או רחב ונמוך) הוא לא פנים.
+function faceOk(f) { if (!f.embedding || !f.embedding.length || !f.box) return false; const a = f.box[2] / (f.box[3] || 1); return a > 0.6 && a < 1.65 && (f.boxScore === undefined || f.boxScore >= 0.5); }
 const NOBODY = () => ({ body: { enabled: false }, object: { enabled: false }, face: { enabled: true, emotion: { enabled: !!S.settings.emotions } } });
-async function det(cv) { const r = await human.detect(cv, NOBODY()); return (r.face || []).filter((f) => f.embedding && f.embedding.length); }
+async function det(cv) { const r = await human.detect(cv, NOBODY()); return (r.face || []).filter(faceOk); }
 function tiles(W, H) {
   const T = Math.round(Math.min(W, H) * 0.6), step = Math.round(T * 0.72), out = [];
   for (let y = 0; y < H; y += step) for (let x = 0; x < W; x += step) {
@@ -63,7 +65,7 @@ async function detectLoop(gen) {
         const useBody = wantBody && m.cv === CV.full;
         const farBody = wantBody && m.cv === CV.tile && bodySharpOn() && PERF.level < 1;
         const r = await human.detect(m.cv, { body: { enabled: useBody || farBody, modelPath: BODY_MODEL, maxDetected: 5, minConfidence: 0.2 }, object: { enabled: false }, face: { enabled: true, emotion: { enabled: !!S.settings.emotions } } });
-        const fs = (r.face || []).filter((f) => f.embedding && f.embedding.length);
+        const fs = (r.face || []).filter(faceOk);
         if (useBody) { bodies = bodyMerge((r.body || []).map((b) => mapBody(b, m)).filter((b) => b.score > 0.2), bodies, now); gotBody = true; }
         else if (farBody) bodyAddFar((r.body || []).map((b) => mapBody(b, m)), now);
         for (const f of fs) {

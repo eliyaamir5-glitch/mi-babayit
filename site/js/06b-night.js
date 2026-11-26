@@ -4,7 +4,7 @@
    ========================================================= */
 const NIGHT = { gain: 1, mean: 128, at: 0, cv: document.createElement('canvas'), told: false };
 NIGHT.cv.width = 16; NIGHT.cv.height = 9;
-const nightOn = () => S.settings.night !== false;
+const nightOn = () => S.settings.night === true; // כבוי כברירת מחדל: הבהרה לפי הבהירות הממוצעת עלולה "לשרוף" פנים מוארות בחדר כהה
 // כמה להבהיר לפי הבהירות הממוצעת (0..255). מעל 70 — לא נוגעים
 function nightGain(mean) { return mean >= 70 ? 1 : Math.min(2.4, Math.max(1, 95 / Math.max(20, mean))); }
 function nightFilter() { return NIGHT.gain > 1.05 ? `brightness(${NIGHT.gain.toFixed(2)}) contrast(1.08)` : 'none'; }

@@ -22,16 +22,21 @@ async function initEngine() {
   const H = window.Human && (window.Human.Human || window.Human);
   if (!H) { setStatus('bad', 'לא הצלחתי לטעון את מנוע הזיהוי. בדוק חיבור לאינטרנט ורענן.'); return; }
   // מנסים קודם את WebGPU (מהיר יותר), ואם לא עובד — WebGL
-  const order = (S.settings.engine !== 'webgl' && navigator.gpu) ? ['webgpu', 'webgl'] : ['webgl'];
+  // ברירת המחדל היא WebGL — המנוע האמין. WebGPU מהיר יותר, אבל בחלק מהמחשבים הוא מחזיר זיהוי שגוי,
+  // ולכן הוא רק לפי בחירה מפורשת בהגדרות, ורק אם עבר את בדיקת השפיות.
+  const order = (S.settings.engine === 'webgpu' && navigator.gpu) ? ['webgpu', 'webgl'] : ['webgl'];
   for (const be of order) {
     try {
       if (be === 'webgpu') { const ad = await navigator.gpu.requestAdapter(); if (!ad) throw new Error('no adapter'); }
       human = makeHuman(H, be);
       setProg(15);
       await human.load(); setProg(65);
-      await human.warmup(); setProg(100);
+      const warm = await human.warmup(); setProg(100);
       const real = human.tf.getBackend();
       if (be === 'webgpu' && real !== 'webgpu') throw new Error('fallback');
+      // בדיקת שפיות: תמונת הבדיקה המובנית של המנוע מכילה פנים אחדות במקום ידוע. מנוע שלא מוצא אותן — לא אמין.
+      engineCheck = engineSane(warm);
+      if (!engineCheck.ok && be !== order[order.length - 1]) throw new Error('sanity: ' + engineCheck.why);
       engineName = real === 'webgpu' ? 'WebGPU' : 'WebGL';
       setStatus('idle', 'מוכן — לחץ "הפעל מצלמה"');
       $('startBtn').disabled = false; $('startBtn2').disabled = false;
@@ -42,7 +47,16 @@ async function initEngine() {
   }
   setStatus('bad', 'טעינת המודלים נכשלה. בדוק חיבור לאינטרנט ורענן.');
 }
-let engineName = '';
+let engineName = '', engineCheck = { ok: null, why: 'לא נבדק' };
+function engineSane(r) {
+  const fs = (r && r.face) || [];
+  if (fs.length !== 1) return { ok: false, why: `נמצאו ${fs.length} פנים בתמונת הבדיקה במקום 1` };
+  const f = fs[0], b = f.box || [0, 0, 0, 0];
+  if (!f.embedding || !f.embedding.length) return { ok: false, why: 'אין חתימת פנים' };
+  if (Math.abs(b[0] - 533) > 40 || Math.abs(b[1] - 53) > 40 || Math.abs(b[2] - 121) > 40) return { ok: false, why: `הפנים נמצאו במקום שגוי (${b.map(Math.round).join(',')})` };
+  if ((f.boxScore || f.score || 0) < 0.6) return { ok: false, why: 'ודאות נמוכה בתמונת הבדיקה' };
+  return { ok: true, why: 'תקין' };
+}
 function setProg(v) { $('progBar').style.width = v + '%'; }
 function setStatus(kind, text) {
   $('sDot').className = 'dot' + (kind === 'on' ? ' on' : kind === 'load' ? ' load' : '');

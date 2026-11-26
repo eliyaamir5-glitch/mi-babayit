@@ -9,6 +9,8 @@
   if (S.settings.quality === 'sharp') S.settings.quality = 'far';
   // גרסה 13: התוספות הניסיוניות (מראה, גוף חד, שלד) כבויות עד שמדליקים אותן במפורש
   if (!S.settings.v13) { S.settings.looks = false; S.settings.bodySharp = false; S.settings.bodyDraw = false; S.settings.v13 = true; }
+  // גרסה 14: מנוע אמין (WebGL) כברירת מחדל, ושיפור בחושך כבוי — שניהם חשודים בזיהוי שגוי במחשב של הבעלים
+  if (!S.settings.v14) { S.settings.engine = 'webgl'; S.settings.night = false; S.settings.v14 = true; }
   syncSettings(); render(); renderGuard(); applyA11y();
   setStatus('load', 'טוען מנוע זיהוי...');
   initEngine();

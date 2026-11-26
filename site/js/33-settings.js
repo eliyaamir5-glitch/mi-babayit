@@ -10,8 +10,8 @@ function syncSettings() {
   $('thr').value = S.settings.threshold;
   const t = S.settings.threshold;
   $('thrTxt').textContent = `${Math.round(t * 100)}% · ` + (t < 0.63 ? 'מקל — מזהה מהר, אבל עלול להתבלבל בין אנשים' : t > 0.74 ? 'מחמיר — כמעט בלי טעויות, אבל ייתכן שלא יזהה' : 'מאוזן (מומלץ)');
-  $('qSel').value = S.settings.quality; $('eSel').value = S.settings.engine;
-  $('engTxt').textContent = engineName ? `פועל כרגע: ${engineName}` : '';
+  $('qSel').value = S.settings.quality; $('eSel').value = S.settings.engine === 'webgpu' ? 'webgpu' : 'webgl';
+  $('engTxt').textContent = engineName ? `פועל כרגע: ${engineName}${engineCheck.ok === false ? ' · ⚠️ בדיקת המנוע נכשלה' : engineCheck.ok ? ' · נבדק ותקין' : ''}` : '';
   const st = S.settings;
   $('swGuard').classList.toggle('on', st.guardOn); $('sens').value = st.motionSens;
   $('sensTxt').textContent = `${st.motionSens}/10 · ` + (st.motionSens <= 3 ? 'רק תנועות גדולות נחשבות' : st.motionSens >= 8 ? 'גם תנועה קטנה נחשבת' : 'מאוזן');
@@ -21,7 +21,7 @@ function syncSettings() {
   $('envGrid').innerHTML = Object.entries(ENVS).map(([k, e]) => `<button data-env="${k}" class="${st.env === k ? 'on' : ''}"><span>${e.icon}</span>${e.name}</button>`).join('');
   $('envNote').textContent = envCfg().note;
   $('envPill').textContent = `${envCfg().icon} ${envCfg().name}`;
-  $('swPriv').classList.toggle('on', !!st.privacy); $('swEmo').classList.toggle('on', !!st.emotions); $('swLook').classList.toggle('on', st.looks === true); $('swBodySharp').classList.toggle('on', st.bodySharp === true); $('swNight').classList.toggle('on', st.night !== false); $('swAnchor').classList.toggle('on', st.anchor !== false); $('swBodyDraw').classList.toggle('on', st.bodyDraw === true);
+  $('swPriv').classList.toggle('on', !!st.privacy); $('swEmo').classList.toggle('on', !!st.emotions); $('swLook').classList.toggle('on', st.looks === true); $('swBodySharp').classList.toggle('on', st.bodySharp === true); $('swNight').classList.toggle('on', st.night === true); $('swAnchor').classList.toggle('on', st.anchor !== false); $('swBodyDraw').classList.toggle('on', st.bodyDraw === true);
   const sd = st.snd; $('swSnd').classList.toggle('on', sd.on); $('sndBody').classList.toggle('hidden', !sd.on);
   $('ndb').value = sd.noiseDb; $('ndbTxt').textContent = `${sd.noiseDb} דציבל מעל רעש הרקע · ` + (sd.noiseDb < 18 ? 'רגיש מאוד (חדר שקט)' : sd.noiseDb > 32 ? 'רק רעש חזק' : 'מאוזן');
   $('sndEng').value = sd.engine === 'basic' ? 'basic' : 'auto'; $('swSndSpeak').classList.toggle('on', !!sd.speakNotify);
@@ -51,7 +51,7 @@ $('setBtn').onclick = () => { syncSettings(); $('setModal').classList.add('open'
 $('setClose').onclick = () => $('setModal').classList.remove('open');
 $('thr').oninput = (e) => { S.settings.threshold = +e.target.value; syncSettings(); save(); };
 $('qSel').onchange = async (e) => { S.settings.quality = e.target.value; save(); if (running) { stopCam(); await startCam(); } };
-$('eSel').onchange = (e) => { S.settings.engine = e.target.value; save(); toast(null, 'נשמר', 'רענן את הדף כדי להחליף מנוע'); };
+$('eSel').onchange = (e) => { S.settings.engine = e.target.value; save(); toast(null, 'נשמר', 'מרענן את הדף כדי להחליף מנוע'); setTimeout(() => location.reload(), 900); };
 const tgl = (k, after) => () => { S.settings[k] = !S.settings[k]; save(); syncSettings(); if (after) after(); };
 $('swGuard').onclick = tgl('guardOn', () => { if (!S.settings.guardOn) guarded().forEach((p) => { const s = G[p.id]; if (s && (s.state === 'emergency' || s.state === 'asking')) endEmergency(p, 'השמירה כובתה'); }); renderGuard(); });
 $('sens').oninput = (e) => { S.settings.motionSens = +e.target.value; save(); syncSettings(); };
@@ -86,7 +86,7 @@ $('drillAll').onclick = () => {
 $('envGrid').onclick = (e) => { const b = e.target.closest('[data-env]'); if (b) applyEnv(b.dataset.env); };
 $('swPriv').onclick = tgl('privacy');
 $('swEmo').onclick = tgl('emotions');
-$('swNight').onclick = () => { S.settings.night = S.settings.night === false; save(); syncSettings(); };
+$('swNight').onclick = () => { S.settings.night = !S.settings.night; save(); syncSettings(); };
 $('swAnchor').onclick = () => { S.settings.anchor = S.settings.anchor === false; save(); syncSettings(); };
 $('swBodySharp').onclick = () => { S.settings.bodySharp = !S.settings.bodySharp; save(); syncSettings(); };
 $('swBodyDraw').onclick = () => { S.settings.bodyDraw = !S.settings.bodyDraw; save(); syncSettings(); };
