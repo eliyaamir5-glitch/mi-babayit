@@ -22,7 +22,7 @@
   <header class="top">
     <div class="logo">
       <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="10" r="3"/><path d="M7 18c1-2.5 3-3.5 5-3.5s4 1 5 3.5"/></svg></div>
-      <div><h1>מי בבית</h1><small>שמירה חכמה על הבית · גרסה 12</small></div>
+      <div><h1>מי בבית</h1><small>שמירה חכמה על הבית · גרסה 13</small></div>
     </div>
     <div class="spacer"></div>
     <div class="pill"><span class="dot load" id="sDot"></span><span id="sText">טוען מנוע זיהוי...</span></div>
@@ -198,9 +198,9 @@
   <div class="set-row"><div>קטעי וידאו לאירועים<small>שומר 8 שניות לפני ואחרי כל אירוע, רק במכשיר</small></div><button class="switch" id="swClips"></button></div>
   <div class="set-row"><div>שיפור תמונה בחושך<small>כשהחדר חשוך, מבהיר את התמונה לפני הזיהוי. זו לא ראיית לילה — בחושך מוחלט צריך אור קטן</small></div><button class="switch" id="swNight"></button></div>
   <div class="set-row"><div>אזורים שנצמדים לחדר<small>אם המצלמה זזה קצת, הדלת, החלון והספה שסימנת זזים איתה ונשארים במקום</small></div><button class="switch" id="swAnchor"></button></div>
-  <div class="set-row"><div>זיהוי גוף חד<small>זום על כל גוף לדיוק גבוה במפרקים, וגילוי אנשים רחוקים. דורש יותר מהמכשיר — אם התמונה נהיית איטית, כבה</small></div><button class="switch" id="swBodySharp"></button></div>
-  <div class="set-row"><div>שלד ופעילות על הווידאו<small>מצייר את השלד על כל גוף וכותב מה האדם עושה: עומד, יושב, הולך, שוכב</small></div><button class="switch" id="swBodyDraw"></button></div>
-  <div class="set-row"><div>זיהוי לפי מראה<small>כשהפנים לא נראות (מסתובב, מתרחק) — ממשיך לזהות לפי הלבוש, השיער ומבנה הגוף שנלמדו היום. זו הערכה, לא זיהוי ודאי</small></div><button class="switch" id="swLook"></button></div>
+  <div class="set-row"><div>זיהוי גוף חד <span class="exp">ניסיוני</span><small>מאט את הזיהוי. זום על כל גוף לדיוק גבוה במפרקים, וגילוי אנשים רחוקים. דורש יותר מהמכשיר — אם התמונה נהיית איטית, כבה</small></div><button class="switch" id="swBodySharp"></button></div>
+  <div class="set-row"><div>שלד ופעילות על הווידאו <span class="exp">ניסיוני</span><small>מצייר את השלד על כל גוף וכותב מה האדם עושה: עומד, יושב, הולך, שוכב</small></div><button class="switch" id="swBodyDraw"></button></div>
+  <div class="set-row"><div>זיהוי לפי מראה <span class="exp">ניסיוני</span><small>מאט את הזיהוי, ועלול לטעות בין אנשים בלבוש דומה. כשהפנים לא נראות (מסתובב, מתרחק) — ממשיך לזהות לפי הלבוש, השיער ומבנה הגוף שנלמדו היום. זו הערכה, לא זיהוי ודאי</small></div><button class="switch" id="swLook"></button></div>
   <div class="set-row"><div>חיישן רגשות<small>מזהה הבעת פנים (רגוע, שמח, עצוב, מפוחד...). זו הערכה, לא אבחנה</small></div><button class="switch" id="swEmo"></button></div>
   <div class="set-row"><div>רגישות לתנועה<small id="sensTxt"></small></div><input type="range" id="sens" min="1" max="10" step="1"></div>
   <div class="set-row"><div>שעות שינה<small>בלי בדיקת "לא זז" בשעות האלה</small></div><div style="display:flex;gap:6px;align-items:center"><input class="field sm" type="time" id="slFrom" style="width:96px"><span>עד</span><input class="field sm" type="time" id="slTo" style="width:96px"><button class="switch" id="swSleep"></button></div></div>
@@ -259,6 +259,7 @@
   <div class="set-row"><div>התראות דפדפן</div><button class="switch" id="swNotif"></button></div>
   <div class="set-row"><div>תזכורת חוזרת<small>כל כמה דקות לשלוח שוב כל עוד החירום פעיל (0 = בלי)</small></div><input class="field sm" type="number" id="remind" min="0" max="60" style="width:70px"></div>
   <h4 class="sethead">כללי</h4>
+  <div class="set-row"><div>דוח אבחון<small>מספרים בלבד (מהירות, מצלמה, איכות הזיהוי) — בלי שמות ובלי תמונות. מעתיקים ושולחים כדי לכוון את המערכת</small></div><button class="ghost" id="dgBtn">הצג</button></div>
   <div class="set-row"><div>התקנה כאפליקציה<small id="instTxt">מוסיף את "מי בבית" למסך הבית, עם אייקון משלה ובמסך מלא</small></div><button class="ghost" id="instBtn">התקן</button></div>
   <div class="set-row"><div>פרטי רכז נגישות<small>מופיעים בהצהרת הנגישות (חובה אם האפליקציה מוצעת לציבור)</small></div></div>
   <div class="frow" style="margin-bottom:10px"><input class="field sm" id="a11yName" placeholder="שם"><input class="field sm" id="a11yPhone" placeholder="טלפון" dir="ltr"><input class="field sm" id="a11yEmail" placeholder="דוא״ל" dir="ltr"></div>
@@ -343,6 +344,7 @@
   <div class="mfoot"><button class="primary" id="eSave">שמור</button><button class="ghost" id="eCancel">ביטול</button><button class="ghost danger" id="eDel">מחק</button></div>
 </div></div>
 <button class="emback hidden" id="emBack">🚨 חזרה למסך החירום</button>
+<div class="modal" id="dgModal"><div class="mbox"><h3 style="font-size:19px;font-weight:800;margin-bottom:10px">📋 דוח אבחון</h3><textarea class="field" id="dgText" readonly rows="14" style="font-size:13px;line-height:1.5;direction:rtl" aria-label="דוח אבחון"></textarea><div class="mfoot"><button class="primary" id="dgCopy">העתק</button></div></div></div>
 <div class="modal" id="obModal"><div class="mbox obbox">
   <div class="obstep" id="obStep1">
     <h3 id="obTitle">ברוכים הבאים ל"מי בבית"</h3>
@@ -368,6 +370,7 @@
 <script src="js/05-engine.js"></script>
 <script src="js/06-detect-loop.js"></script>
 <script src="js/06b-night.js"></script>
+<script src="js/06c-perf.js"></script>
 <script src="js/07-tracking.js"></script>
 <script src="js/08-guard.js"></script>
 <script src="js/08b-appearance.js"></script>

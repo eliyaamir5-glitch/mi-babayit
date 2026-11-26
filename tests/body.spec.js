@@ -4,6 +4,7 @@ const { test, expect } = require('@playwright/test');
 test.beforeEach(async ({ page }) => {
   await page.route(/cdn\.jsdelivr\.net|fonts\.(googleapis|gstatic)\.com/, (r) => r.abort());
   await page.goto('/');
+  await page.waitForFunction(() => S.settings.v13 === true); // מחכים שהאפליקציה תסיים לעלות
   await page.evaluate(() => {
     // שלד עומד: x,y = אמצע הכתפיים, k = קנה מידה
     window.mk = (x, y, k, o = {}) => {

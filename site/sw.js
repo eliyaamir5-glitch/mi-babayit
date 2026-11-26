@@ -4,7 +4,7 @@
    - ספריית הזיהוי והמודלים (כתובות עם מספר גרסה, לא משתנות): קודם מהעותק השמור.
    - כל השאר (התראות ntfy, webhook) לא עובר דרך כאן.
    שום מידע אישי לא נשמר כאן — רק קבצי האפליקציה. */
-const V = 'mibabayit-v12';
+const V = 'mibabayit-v13';
 const CDN = /^https:\/\/(cdn\.jsdelivr\.net\/npm\/@vladmandic\/|fonts\.googleapis\.com\/|fonts\.gstatic\.com\/)/;
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (e) => e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== V).map((k) => caches.delete(k)))).then(() => self.clients.claim())));

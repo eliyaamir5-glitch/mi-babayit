@@ -36,7 +36,7 @@ test('החלפת סביבה מהכותרת: אמבטיה מפעילה פרטיו
   expect(st).toEqual({ privacy: true, skel: true, clips: false, looks: false, still: 0.5 });
   await page.evaluate(() => applyEnv('living'));
   st = await page.evaluate(() => ({ privacy: S.settings.privacy, skel: S.settings.skeleton, clips: S.settings.clips, looks: S.settings.looks, q: S.settings.quality }));
-  expect(st).toEqual({ privacy: false, skel: false, clips: true, looks: true, q: 'balanced' });
+  expect(st).toEqual({ privacy: false, skel: false, clips: true, looks: false, q: 'balanced' }); // סביבה לא מדליקה תוספות ניסיוניות
 });
 
 test('הגדרות בפרקים: סגורים בהתחלה, נפתחים בלחיצה, וחיפוש מוצא שורה', async ({ page }) => {
@@ -88,4 +88,44 @@ test('התקנה כאפליקציה: מניפסט, אייקונים ו-service w
   // כל קובץ שמופיע ב-index.html קיים בפועל
   const html = fs.readFileSync(path.join(__dirname, '..', 'site', 'index.html'), 'utf8');
   for (const m2 of html.matchAll(/<script src="(js\/[^"]+)"/g)) expect(fs.existsSync(path.join(__dirname, '..', 'site', m2[1]))).toBe(true);
+});
+
+test('ברירת מחדל: התוספות הניסיוניות כבויות, וגם אצל מי שכבר השתמש', async ({ page }) => {
+  await page.locator('#obSkip').click();
+  expect(await page.evaluate(() => [lookOn(), bodySharpOn(), bodyDrawOn(), S.settings.v13])).toEqual([false, false, false, true]);
+  // משתמש קיים ששמר הגדרות ישנות עם התוספות דלוקות
+  await page.evaluate(async () => { S.settings.looks = true; S.settings.bodySharp = true; S.settings.bodyDraw = true; delete S.settings.v13; await DB.set('state-v3', S); });
+  await page.reload(); await page.waitForTimeout(600);
+  expect(await page.evaluate(() => [lookOn(), bodySharpOn(), bodyDrawOn()])).toEqual([false, false, false]);
+  // ומי שמדליק בעצמו — נשאר דלוק
+  await page.evaluate(async () => { S.settings.looks = true; await DB.set('state-v3', S); });
+  await page.reload(); await page.waitForTimeout(600);
+  expect(await page.evaluate(() => lookOn())).toBe(true);
+});
+
+test('בקרת עומס: מכשיר איטי מוותר על התוספות, וחוזר רק אחרי שהתייצב', async ({ page }) => {
+  const r = await page.evaluate(() => {
+    const out = [perfLevelFor(200), perfLevelFor(600), perfLevelFor(1200)];
+    PERF.ms = 1200; PERF.level = 0; PERF.t0 = performance.now(); perfEnd(); out.push(PERF.level);       // עולה מיד
+    PERF.ms = 100; PERF.t0 = performance.now(); perfEnd(); out.push(PERF.level);                          // לא יורד מיד
+    PERF.since = Date.now() - 11000; PERF.ms = 100; PERF.t0 = performance.now(); perfEnd(); out.push(PERF.level); // יורד אחרי 10 שניות
+    return out;
+  });
+  expect(r).toEqual([0, 1, 2, 2, 2, 0]);
+});
+
+test('דוח אבחון: מספרים בלבד, בלי שמות', async ({ page }) => {
+  await page.locator('#obSkip').click();
+  await page.evaluate(() => {
+    S.people = [{ id: 'A', name: 'שם סודי', samples: [1, 2, 3], visits: 1, lastSeen: 0 }];
+    diagVote({ sim: 0.81, second: 0.4 }, 0.68, 'A', false); diagVote({ sim: 0.72, second: 0.69 }, 0.68, 'A', true); diagVote({ sim: 0.3, second: 0.2 }, 0.68, null, false);
+  });
+  await page.locator('#setBtn').click();
+  await page.locator('.setsec-h', { hasText: 'כללי' }).click();
+  await page.locator('#dgBtn').click();
+  const txt = await page.locator('#dgText').inputValue();
+  expect(txt).toContain('גרסה 13');
+  expect(txt).toContain('זוהה=2');
+  expect(txt).toContain('סיכון לשם שגוי): 1 מתוך 2');
+  expect(txt).not.toContain('שם סודי');
 });

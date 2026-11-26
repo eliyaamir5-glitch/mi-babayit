@@ -21,7 +21,7 @@ function syncSettings() {
   $('envGrid').innerHTML = Object.entries(ENVS).map(([k, e]) => `<button data-env="${k}" class="${st.env === k ? 'on' : ''}"><span>${e.icon}</span>${e.name}</button>`).join('');
   $('envNote').textContent = envCfg().note;
   $('envPill').textContent = `${envCfg().icon} ${envCfg().name}`;
-  $('swPriv').classList.toggle('on', !!st.privacy); $('swEmo').classList.toggle('on', !!st.emotions); $('swLook').classList.toggle('on', st.looks !== false); $('swBodySharp').classList.toggle('on', st.bodySharp !== false); $('swNight').classList.toggle('on', st.night !== false); $('swAnchor').classList.toggle('on', st.anchor !== false); $('swBodyDraw').classList.toggle('on', st.bodyDraw !== false);
+  $('swPriv').classList.toggle('on', !!st.privacy); $('swEmo').classList.toggle('on', !!st.emotions); $('swLook').classList.toggle('on', st.looks === true); $('swBodySharp').classList.toggle('on', st.bodySharp === true); $('swNight').classList.toggle('on', st.night !== false); $('swAnchor').classList.toggle('on', st.anchor !== false); $('swBodyDraw').classList.toggle('on', st.bodyDraw === true);
   const sd = st.snd; $('swSnd').classList.toggle('on', sd.on); $('sndBody').classList.toggle('hidden', !sd.on);
   $('ndb').value = sd.noiseDb; $('ndbTxt').textContent = `${sd.noiseDb} דציבל מעל רעש הרקע · ` + (sd.noiseDb < 18 ? 'רגיש מאוד (חדר שקט)' : sd.noiseDb > 32 ? 'רק רעש חזק' : 'מאוזן');
   $('sndEng').value = sd.engine === 'basic' ? 'basic' : 'auto'; $('swSndSpeak').classList.toggle('on', !!sd.speakNotify);
@@ -88,9 +88,9 @@ $('swPriv').onclick = tgl('privacy');
 $('swEmo').onclick = tgl('emotions');
 $('swNight').onclick = () => { S.settings.night = S.settings.night === false; save(); syncSettings(); };
 $('swAnchor').onclick = () => { S.settings.anchor = S.settings.anchor === false; save(); syncSettings(); };
-$('swBodySharp').onclick = () => { S.settings.bodySharp = S.settings.bodySharp === false; save(); syncSettings(); };
-$('swBodyDraw').onclick = () => { S.settings.bodyDraw = S.settings.bodyDraw === false; save(); syncSettings(); };
-$('swLook').onclick = () => { S.settings.looks = S.settings.looks === false; save(); syncSettings(); };
+$('swBodySharp').onclick = () => { S.settings.bodySharp = !S.settings.bodySharp; save(); syncSettings(); };
+$('swBodyDraw').onclick = () => { S.settings.bodyDraw = !S.settings.bodyDraw; save(); syncSettings(); };
+$('swLook').onclick = () => { S.settings.looks = !S.settings.looks; save(); syncSettings(); };
 $('swSnd').onclick = () => { S.settings.snd.on = !S.settings.snd.on; save(); syncSettings(); syncAudio(); };
 $('ndb').oninput = (e) => { S.settings.snd.noiseDb = +e.target.value; save(); syncSettings(); };
 $('sndEng').onchange = (e) => { S.settings.snd.engine = e.target.value; save(); if (A.on && e.target.value !== 'basic') loadSmart(); if (e.target.value === 'basic') { A.cls = null; A.smartState = 'off'; } renderSoundStatus(); };
@@ -170,3 +170,6 @@ $('startBtn').onclick = startCam; $('startBtn2').onclick = startCam;
 $('stopBtn').onclick = stopCam;
 setInterval(() => { if (!editingId) render(); }, 15000);
 
+
+$('dgBtn').onclick = () => { $('dgText').value = diagReport(); $('dgModal').classList.add('open'); };
+$('dgCopy').onclick = async () => { try { await navigator.clipboard.writeText($('dgText').value); toast(null, '✓ הועתק', 'אפשר להדביק ולשלוח'); } catch (e) { $('dgText').select(); toast(null, 'סמן והעתק ידנית', 'ההעתקה האוטומטית לא זמינה בדפדפן הזה'); } };

@@ -21,6 +21,7 @@ function process(faces) {
     else if (m.person && m.sim >= thr - CFG.maybeGap) vote = 'maybe';
     tr.votes.push(vote); if (tr.votes.length > CFG.votesWindow) tr.votes.shift();
     tr.sim = m.sim; tr.maybe = vote === 'maybe' ? m.person.id : null;
+    diagVote(m, need, vote, small);
 
     // 1) אם השם הנוכחי כבר לא מאושר — מורידים אותו (מונע "הדבקת" שם לאדם אחר)
     if (tr.pid) {

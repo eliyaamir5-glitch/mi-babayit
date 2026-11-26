@@ -50,6 +50,8 @@ test('המצלמה המדומה נדלקת ופנים מזוהות', async ({ pa
   await offline(page);
   await page.goto('/');
   await passOnboard(page);
+  // התוספות הניסיוניות כבויות כברירת מחדל — מדליקים אותן כדי לבדוק גם אותן
+  await page.evaluate('S.settings.looks = true; S.settings.bodySharp = true; S.settings.bodyDraw = true; perfLevelFor = () => 0'); // בלי כרטיס גרפי בקרת העומס הייתה מכבה אותן
   await expect(page.locator('#startBtn')).toBeEnabled({ timeout: 90_000 });
   await page.locator('#startBtn').click();
   await expect(page.locator('#sText')).toHaveText('סורק', { timeout: 30_000 });

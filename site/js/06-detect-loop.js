@@ -33,7 +33,7 @@ async function detectLoop(gen) {
   if (video.readyState >= 2 && !video.paused) {
     try {
       const W = video.videoWidth, H = video.videoHeight, now = Date.now();
-      nightTick(now);
+      nightTick(now); perfStart();
       const obs = [];
       // 1) זום על כל פנים שכבר במעקב — חיתוך ברזולוציה מלאה, כך שגם פנים רחוקות מקבלות מספיק פיקסלים
       const active = tracks.filter((t) => now - t.seen < 600).sort((a, b) => b.box[2] - a.box[2]).slice(0, 4);
@@ -59,9 +59,9 @@ async function detectLoop(gen) {
       }
       let gotBody = false;
       for (const m of passes) {
-        const wantBody = guarding || lookOn();
+        const wantBody = guarding || (lookOn() && (PERF.level < 2 || cycle % 3 === 0)); // מכשיר עמוס: גוף ל"מראה" רק בכל סבב שלישי. בשמירה — תמיד
         const useBody = wantBody && m.cv === CV.full;
-        const farBody = wantBody && m.cv === CV.tile && bodySharpOn();
+        const farBody = wantBody && m.cv === CV.tile && bodySharpOn() && PERF.level < 1;
         const r = await human.detect(m.cv, { body: { enabled: useBody || farBody, modelPath: BODY_MODEL, maxDetected: 5, minConfidence: 0.2 }, object: { enabled: false }, face: { enabled: true, emotion: { enabled: !!S.settings.emotions } } });
         const fs = (r.face || []).filter((f) => f.embedding && f.embedding.length);
         if (useBody) { bodies = bodyMerge((r.body || []).map((b) => mapBody(b, m)).filter((b) => b.score > 0.2), bodies, now); gotBody = true; }
@@ -81,6 +81,7 @@ async function detectLoop(gen) {
       guardTick();
       syncRec();
       await petPass(Date.now()); // אחרי בדיקת השמירה, כדי לא לעכב אותה
+      perfEnd();
     } catch (e) { console.error(e); }
     const now = performance.now(); fpsT.push(now); while (fpsT.length && now - fpsT[0] > 1000) fpsT.shift();
   }

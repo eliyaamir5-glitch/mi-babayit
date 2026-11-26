@@ -18,7 +18,7 @@ const LOOKCFG = {
   toastGapMs: 5 * 60000,
 };
 const LOOK = { cv: null, src: null, last: null, bt: [], seq: 1, toastAt: {} };
-const lookOn = () => S.settings.looks !== false;
+const lookOn = () => S.settings.looks === true;
 const lookDay = () => new Date().toDateString();
 
 /* ---------- חתימת צבע של אזור בתמונה ---------- */

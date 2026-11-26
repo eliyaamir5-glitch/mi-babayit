@@ -17,8 +17,8 @@ const BODYCFG = {
   walk: 0.45,         // מהירות (באורכי גב לשנייה) שמעליה "הולך"
 };
 const BODY = { cv: document.createElement('canvas'), rr: 0, sm: [], smSeq: 1 };
-const bodySharpOn = () => S.settings.bodySharp !== false && S.settings.quality !== 'fast';
-const bodyDrawOn = () => S.settings.bodyDraw !== false;
+const bodySharpOn = () => S.settings.bodySharp === true && S.settings.quality !== 'fast';
+const bodyDrawOn = () => S.settings.bodyDraw === true;
 const kpCount = (b) => { let n = 0; for (const k in b.kp) if (b.kp[k][2] > 0.3) n++; return n; };
 const boxCenterIn = (a, b) => { const cx = a[0] + a[2] / 2, cy = a[1] + a[3] / 2; return cx > b[0] && cx < b[0] + b[2] && cy > b[1] && cy < b[1] + b[3]; };
 const sameBody = (a, b) => iou(a, b) > 0.2 || boxCenterIn(a, b) || boxCenterIn(b, a);
@@ -48,7 +48,7 @@ function bodyAddFar(found, now) {
 
 /* ---------- זום על גוף ---------- */
 async function bodyRefine(now) {
-  if (!bodySharpOn() || !bodies.length) return;
+  if (!bodySharpOn() || !bodies.length || PERF.level >= 1) return; // מכשיר עמוס — מוותרים על הזום
   if (fpsT.length < 3 && cycle % 2) return; // מכשיר איטי: מחדדים רק בכל סבב שני, כדי לא להאט את זיהוי הפנים
   const W = video.videoWidth, H = video.videoHeight;
   const n = Math.min(fpsT.length < 5 ? 1 : BODYCFG.perCycle, bodies.length);
